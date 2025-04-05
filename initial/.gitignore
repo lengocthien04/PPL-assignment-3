@@ -1,0 +1,5 @@
+__pycache__/
+/target/
+/src/test/solutions/
+/src/test/testcases/
+.antlr/
