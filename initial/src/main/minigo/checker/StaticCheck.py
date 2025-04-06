@@ -33,10 +33,8 @@ class StaticChecker(BaseVisitor,Utils):
         self.ast = ast
         self.global_envi = [Symbol("getInt",MType([],IntType()),None),Symbol("putIntLn",MType([IntType()],VoidType()))]
         self.currentFunc = None
-        self.isMethod = False
-        self.turn = 0
+        self.ForBlock = None
         self.isCheck = False
-        self.inExpr = False
     
     def check(self):
         return self.visit(self.ast,self.global_envi)
@@ -56,10 +54,15 @@ class StaticChecker(BaseVisitor,Utils):
         return self.CheckTypeBasic(aType, bType)
     
     def getType(self, tp, c):
-        parType = self.visit(tp,c)
-        if type(parType) is Tuple:
-            parType = parType[0]
+        parType = None
+        try:
+            parType = self.visit(tp, c)
+            if type(parType) is Tuple:
+                parType = parType[0]
+        except Exception as e: 
+            raise Undeclared(Type(), tp.name)
         return parType
+
     
         
 
@@ -110,6 +113,20 @@ class StaticChecker(BaseVisitor,Utils):
     def visitProgram(self,ast: Program, c):
         c = [[
             #them cac ham co san vao nhe
+            Symbol('getInt', MType([], IntType()), None),
+            Symbol('putInt', MType([Symbol('i', IntType(), None)], VoidType()), None),
+            Symbol('putIntLn', MType([Symbol('i', IntType(), None)], VoidType()), None),
+            Symbol('getFloat', MType([], FloatType()), None),
+            Symbol('putFloat', MType([Symbol('f', FloatType(), None)], VoidType()), None),
+            Symbol('putFloatLn', MType([Symbol('f', FloatType(), None)], VoidType()), None),
+            Symbol('getBool', MType([], BoolType()), None),
+            Symbol('putBool', MType([Symbol('b', BoolType(), None)], VoidType()), None),
+            Symbol('putBoolLn', MType([Symbol('b', BoolType(), None)], VoidType()), None),
+            Symbol('getString', MType([], StringType()), None),
+            Symbol('putString', MType([Symbol('s', StringType(), None)], VoidType()), None),
+            Symbol('putStringLn', MType([Symbol('s', StringType(), None)], VoidType()), None),
+            Symbol('putLn', MType([], VoidType()), None),
+
         ]]
         reduce(lambda acc, ele: self.visit(ele, acc), ast.decl, c)
         return None
@@ -128,13 +145,12 @@ class StaticChecker(BaseVisitor,Utils):
         varInitValue = 0
         if res is not None: raise Redeclared(Variable(), ast.varName )
         if ast.varType :
-            varType = self.visit(ast.varType, c)
+            varType = self.getType(ast.varType, c)
             
         if ast.varInit :
-            print(ast)
             varInitType, varInitValue = self.visit(ast.varInit, c)
             if varType is None: 
-                varType = self.visit(varInitType)
+                varType = self.visit(varInitType,c )
                 return [[Symbol(ast.varName, varType, varInitValue)] + c[0]] + c[1:]
             if not self.CheckTypeComplex(varType, varInitType, c):
                 raise TypeMismatch(ast)
@@ -148,6 +164,7 @@ class StaticChecker(BaseVisitor,Utils):
        
     def visitFuncDecl(self,ast: FuncDecl, c):
         res = self.lookup(ast.name, c[0], lambda x: x.name)
+
         if res is not None: raise Redeclared(Function(), ast.name)
         # viet 1 ham lay gia tri cua ID
         paramBlock = []
@@ -156,8 +173,10 @@ class StaticChecker(BaseVisitor,Utils):
             if res is not None:
                 raise Redeclared(Parameter(), i.parName)
             paramBlock.append(Symbol(i.parName, self.getType(i.parType,c), None))
+        self.currentFunc = Symbol(ast.name, MType(paramBlock, self.getType(ast.retType, c)))
         # chua xu ly reType error
         self.visit(ast.body, [paramBlock] + [[Symbol(ast.name, MType(paramBlock, self.getType(ast.retType, c)))] +c[0]] + c[1:])
+        self.currentFunc = None
         return [[Symbol(ast.name, MType(paramBlock, self.getType(ast.retType, c)))] +c[0]] + c[1:]
 
     def visitMethodDecl(self,ast, c):
@@ -191,42 +210,86 @@ class StaticChecker(BaseVisitor,Utils):
         return ArrayType()
     
     def visitStructType(self,ast, c):
+        #return ve them c
         raise ValueError('do nothing struct')
 
         raise ValueError('chua lam dau e')
 
     def visitInterfaceType(self,ast, c):
+        #return ve them c
         raise ValueError('do nothing interface')
 
         raise ValueError('chua lam dau e')
     
     def visitBlock(self,ast: Block, c):
-        reduce(lambda acc, ele: self.visit(ele, acc), ast.member,[[]]+ c)
+        block =[[]]
+        if self.ForBlock:
+            block = [self.ForBlock]
+        print( '>>>>>>>>>>>>>>>', block)
+
+        reduce(lambda acc, ele: self.visit(ele, acc), ast.member, block + c)
         return c
  
     def visitAssign(self,ast, c):
-        raise ValueError('chua lam dau e')
+        exist = False
+        return c
    
-    def visitIf(self,ast, c):
-        raise ValueError('chua lam dau e')
+    def visitIf(self,ast: If, c):
+        conditionType, conditionValue = self.visit(ast.expr, c)
+        if type(conditionType) is not BoolType:
+            raise TypeMismatch(ast)
+        self.visit(ast.thenStmt, c)
+        if ast.elseStmt:
+            self.visit(ast.elseStmt, c)
+        return c
     
-    def visitForBasic(self,ast, c):
-        raise ValueError('chua lam dau e')
+    def visitForBasic(self,ast: ForBasic, c):
+        conditionType, conditionValue = self.visit(ast.cond, c)
+        if type(conditionType) is not BoolType:
+            raise TypeMismatch(ast)
+        self.visit(ast.loop, c)
+        return c
  
-    def visitForStep(self,ast, c):
-        raise ValueError('chua lam dau e')
+    def visitForStep(self,ast: ForStep, c):
+        init = self.visit(ast.init, [[]]+ c)
+        temp = c 
+        if init is not None:
+            temp = init
+        conditionType, conditionValue = self.visit(ast.cond, temp)
+        #moi tham thoi con chua co xu li neu tao moi bien bang assign
+        update = self.visit(ast.upda, temp)
+        if type(conditionType) is not BoolType:
+            raise TypeMismatch(ast)
+        self.ForBlock = init[0]
+        self.visit(ast.loop, c)
 
-    def visitForEach(self,ast, c):
-        raise ValueError('chua lam dau e')
+        return c
+
+    def visitForEach(self,ast: ForEach, c):
+        arrType, arrValue = self.visit(ast.arr, c)
+        if type(arrType) is not ArrayType:
+            raise TypeMismatch(ast)
+        self.ForBlock = [Symbol(ast.idx.name, IntType(), None), Symbol(ast.value.name, self.getType(arrType.eleType, c), None)]
+        self.visit(ast.loop, c)
+        return c
 
     def visitContinue(self,ast, c):
-        raise ValueError('chua lam dau e')
+        return c
     
     def visitBreak(self,ast, c):
-        raise ValueError('chua lam dau e')
+        return c
     
-    def visitReturn(self,ast, c):
-        raise ValueError('chua lam dau e')
+    def visitReturn(self,ast: Return, c):
+        if self.currentFunc is not None:
+            funcRetype = self.currentFunc.mtype.rettype
+            if type(funcRetype) is VoidType:
+                if ast.expr:
+                    raise TypeMismatch(ast)
+                return c
+            exprType, exprValue = self.visit(ast.expr)
+            if not self.CheckTypeBasic(exprType, funcRetype):
+                raise TypeMismatch(ast)
+        return c
 
     def visitBinaryOp(self,ast: BinaryOp, c):
         leftType, leftValue = self.visit(ast.left, c)
@@ -238,15 +301,25 @@ class StaticChecker(BaseVisitor,Utils):
                 return StringType(), None
             if type(leftType) is IntType and type(rightType) is IntType:
                 # tam thoi de None roi tinh gia tri sau
-                return IntType(), leftValue + rightValue
+                if leftValue is not None and rightValue is not None:
+                   return IntType(), leftValue + rightValue
+                return IntType(), None
             if type(leftType) in [IntType, FloatType] and type(rightType) in [IntType, FloatType]:
-                return FloatType(), leftValue + rightValue
+                if leftValue is not None and rightValue is not None:
+                    return FloatType(), leftValue + rightValue
+                return FloatType(), None
+                    
+                
             raise TypeMismatch(ast)
         if ast.op in ['-', '*', '/']:
             if type(leftType) is IntType and type(rightType) is IntType:
-                return IntType(), leftValue - rightValue
+                if leftValue is not None and rightValue is not None:
+                    return IntType(), leftValue - rightValue
+                return IntType(), None
             if type(leftType) in [IntType, FloatType] and type(rightType) in [IntType, FloatType]:
-                return FloatType(), leftValue - rightValue
+                if leftValue is not None and rightValue is not None:
+                    return FloatType(), leftValue - rightValue
+                return FloatType(), None
             raise TypeMismatch(ast)
         if ast.op == '%':
             if type(leftType) is IntType and type(rightType) is IntType:
@@ -263,20 +336,48 @@ class StaticChecker(BaseVisitor,Utils):
             raise TypeMismatch(ast)
         if ast.op in ['&&', '||'] :
             if type(leftType) is BoolType and type(rightType) is BoolType:
-                return BoolType, None
+                return BoolType(), None
             raise TypeMismatch(ast)
     
-    def visitUnaryOp(self,ast, c):
-        raise ValueError('chua lam dau e')
-    
-    def visitFuncCall(self,ast, c):
-        raise ValueError('chua lam dau e')
+    def visitUnaryOp(self,ast: UnaryOp, c):
+        utype, uvalue = self.visit(ast.body, c)
+        if ast.op == '!':
+            if type(utype) is not BoolType:
+                raise TypeMismatch(ast)
+            return BoolType(), None
+        if ast.op == '-':
+            if type(utype) not in [IntType, FloatType]:
+                raise TypeMismatch(ast)
+            if uvalue is None:
+                return utype, None
+            return  utype, -uvalue
+            
+    def visitFuncCall(self,ast: FuncCall, c):
+        func = None
+        for scope in c:
+            func = self.lookup(ast.funName, scope, lambda x: x.name)
+            if func is not None and type(func.mtype) is not MType:
+            # chua duoc confirm tren forum
+                raise TypeMismatch(ast)
+        if func is None:
+            raise Undeclared(Function(), ast.funName)
+        #khac so luong
+        func_call_params = ast.args
+        func_params = func.mtype.partype
+        if len(func_call_params) != len(func_params):
+            raise TypeMismatch(ast)
+        for i in range(len(func_call_params)):
+            func_call_params_i_type, func_call_value = self.visit(func_call_params[i],c )
+            if not self.CheckTypeBasic(func_call_params_i_type, self.getType(func_params[i].mtype, c)):
+                raise TypeMismatch(ast)
+        return func.mtype.rettype, None
 
     def visitMethCall(self,ast, c):
         raise ValueError('chua lam dau e')
     
     def visitId(self,ast: Id, c):
         for block in c:
+            print(block,'bug day ne')
             res :Symbol = self.lookup(ast.name, block, lambda x: x.name)
             if res is not None:
                 return res.mtype, res.value
