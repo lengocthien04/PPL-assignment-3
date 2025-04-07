@@ -90,32 +90,52 @@ class StaticChecker(BaseVisitor,Utils):
     
     def getType(self, tp, c):
         parType = tp
-
+        if self.step == 0:
+            return tp
         if isinstance(tp, tuple):
             parType = tp[0]
-        try:
-
-            parType = self.visit(parType, c)
-
-
-            if type(parType) is Tuple:
-                parType = parType[0]
-            if isinstance(parType, tuple):
-                parType = parType[0]
-            # if type(parType) is Tuple:
-            #     parType = parType[0]
-            # if isinstance(parType, tuple):
-            #     parType = parType[0]
-        except Exception as e:
-           if isinstance(e, Redeclared):
+        # try:
+        if type(parType) is Id:
+            res = self.lookup(parType.name, c[-1], lambda x: x.name)
+            if res is None:
+                raise Undeclared(Type(), parType.name)
+            return res.mtype
+        if type(parType) is Symbol:
+            parType = parType.mtype
             return parType
-           raise Undeclared(Type(), parType.name)
+        if type(parType) is StructType or type(parType) is InterfaceType:
+            return parType
+        parType = self.visit(parType, c)
+        if type(parType) is Tuple:
+            parType = parType[0]
+        if isinstance(parType, tuple):
+            parType = parType[0]
+
+        # except Exception as e:
+        #    if isinstance(e, Redeclared):
+        #     return parType
+           
+        #    raise Undeclared(Type(), parType.name)
         return parType
     
     def addToLocal(self, ele, c):
         return [[ele] +c[0]] + c[1:]
     
+
+    def updateGlobal(self, ele, c):
+            
+        res = self.lookup(ele.name, c[0], lambda x: x.name)
+        if res is None:
+            return self.addToLocal(ele,c)
+        res.name = ele.name
+        
+        res.mtype = ele.mtype
+        res.value = ele.value
+        return c
+    
     def checkArrayEletype(self, eleList, eleType,c ):
+        if self.step == 0:
+            return True
         if type(eleList) is list:
             if len(eleList) == 0:
                 return True
@@ -129,6 +149,7 @@ class StaticChecker(BaseVisitor,Utils):
                     return False
         return True
     
+
 
     #symbol:
     #6 type : var, const, func, struct, interface, method
@@ -157,11 +178,35 @@ class StaticChecker(BaseVisitor,Utils):
             Symbol('putLn', MType([], VoidType()), None),
 
         ]]
+        t = [[
+            #them cac ham co san vao nhe
+            Symbol('getInt', MType([], IntType()), None),
+            Symbol('putInt', MType([Symbol('i', IntType(), None)], VoidType()), None),
+            Symbol('putIntLn', MType([Symbol('i', IntType(), None)], VoidType()), None),
+            Symbol('getFloat', MType([], FloatType()), None),
+            Symbol('putFloat', MType([Symbol('f', FloatType(), None)], VoidType()), None),
+            Symbol('putFloatLn', MType([Symbol('f', FloatType(), None)], VoidType()), None),
+            Symbol('getBool', MType([], BoolType()), None),
+            Symbol('putBool', MType([Symbol('b', BoolType(), None)], VoidType()), None),
+            Symbol('putBoolLn', MType([Symbol('b', BoolType(), None)], VoidType()), None),
+            Symbol('getString', MType([], StringType()), None),
+            Symbol('putString', MType([Symbol('s', StringType(), None)], VoidType()), None),
+            Symbol('putStringLn', MType([Symbol('s', StringType(), None)], VoidType()), None),
+            Symbol('putLn', MType([], VoidType()), None),
+
+        ]]
         self.step = 0
-        # for i in ast.decl:
-        #     if type(i) in [InterfaceType,StructType]:
-        #         c = self.visit(i,c)
-        
+        for i in ast.decl:
+            if type(i) not in[VarDecl, ConstDecl, MethodDecl]:
+                t = self.visit(i,t)
+        for i in ast.decl:
+            if type(i) in [InterfaceType,StructType]:
+                c = self.visit(i,c)
+        for i in ast.decl:
+            if type(i) not in[InterfaceType, StructType,VarDecl, ConstDecl]:
+                c = self.visit(i,c)
+        self.step = 1
+
         reduce(lambda acc, ele: self.visit(ele, acc), ast.decl, c)
         return None
     
@@ -173,6 +218,7 @@ class StaticChecker(BaseVisitor,Utils):
         # var a float = 12 ( force type int to float)
         # var a string = 12 (type mismatch)
 
+
         res = self.lookup(ast.varName, c[0], lambda x: x.name)
         varType = None
         varInitType = None
@@ -183,6 +229,7 @@ class StaticChecker(BaseVisitor,Utils):
             
         if ast.varInit :
             varInitType, varInitValue = self.visit(ast.varInit, c)
+
             if type(varInitType) is VoidType:
                 raise TypeMismatch(ast)
             if varType is None: 
@@ -190,7 +237,7 @@ class StaticChecker(BaseVisitor,Utils):
                 return [[Symbol(ast.varName, varType, varInitValue)] + c[0]] + c[1:]
             if not self.CheckTypeComplex(varType, varInitType, c):
                 raise TypeMismatch(ast)
-        return [[Symbol(ast.varName, varType, varInitValue)] + c[0]] + c[1:]
+        return self.addToLocal(Symbol(ast.varName, varType, varInitValue), c)
 
     def visitConstDecl(self,ast: ConstDecl, c):
         res = self.lookup(ast.conName, c[0], lambda x: x.name)
@@ -199,9 +246,9 @@ class StaticChecker(BaseVisitor,Utils):
         return [[Symbol(ast.conName, constType, constValue)] + c[0]] + c[1:]
        
     def visitFuncDecl(self,ast: FuncDecl, c):
-        res = self.lookup(ast.name, c[0], lambda x: x.name)
-
-        if res is not None: raise Redeclared(Function(), ast.name)
+        if self.step == 0:
+            res = self.lookup(ast.name, c[0], lambda x: x.name)
+            if res is not None: raise Redeclared(Function(), ast.name)
         # viet 1 ham lay gia tri cua ID
         paramBlock = []
         for i in ast.params :
@@ -211,9 +258,10 @@ class StaticChecker(BaseVisitor,Utils):
             paramBlock.append(Symbol(i.parName, self.getType(i.parType,c), None))
         self.currentFunc = Symbol(ast.name, MType(paramBlock, self.getType(ast.retType, c)))
         # chua xu ly reType error
-        self.visit(ast.body, [paramBlock] + [[Symbol(ast.name, MType(paramBlock, self.getType(ast.retType, c)))] +c[0]] + c[1:])
+        if self.step ==1:
+            self.visit(ast.body, [paramBlock] + self.updateGlobal(Symbol(ast.name, MType(paramBlock, self.getType(ast.retType, c))),c))
         self.currentFunc = None
-        return [[Symbol(ast.name, MType(paramBlock, self.getType(ast.retType, c)))] +c[0]] + c[1:]
+        return self.updateGlobal(Symbol(ast.name, MType(paramBlock, self.getType(ast.retType, c))), c)
 
     def visitMethodDecl(self,ast:MethodDecl, c):
         rec = [Symbol(ast.receiver, self.getType(ast.recType, c), None)]
@@ -221,11 +269,12 @@ class StaticChecker(BaseVisitor,Utils):
         struct = self.lookup(rec[0].mtype.name, c[-1], lambda x: x.name)
         methods = struct.mtype.methods
         field = struct.mtype.elements
-        if self.lookup(ast.fun.name, methods, lambda x: x.name):
-            raise Redeclared(Method(), ast.fun.name)
-        if self.lookup(ast.fun.name, field, lambda x: x[0]):
-            raise Redeclared(Method(), ast.fun.name)       
-        methods.append(Symbol(ast.fun.name, t[0][0].mtype,None))  
+        if self.step == 0:
+            if self.lookup(ast.fun.name, methods, lambda x: x.name):
+                raise Redeclared(Method(), ast.fun.name)
+            if self.lookup(ast.fun.name, field, lambda x: x[0]):
+                raise Redeclared(Method(), ast.fun.name)
+        struct.mtype.methods = self.updateGlobal(Symbol(ast.fun.name, t[0][0].mtype,None), [struct.mtype.methods])[0]       
         return c   
             
     def visitPrototype(self,ast: Prototype, c):
@@ -256,6 +305,8 @@ class StaticChecker(BaseVisitor,Utils):
         return VoidType()
     
     def visitArrayType(self,ast: ArrayType, c):
+        if self.step == 0:
+            return ast
         dim = []
         for i in ast.dimens:
             if type(i) is int:
@@ -269,9 +320,10 @@ class StaticChecker(BaseVisitor,Utils):
         return ArrayType(dim, eletype), None
                 
     def visitStructType(self,ast: StructType, c):
-        res = self.lookup(ast.name, c[-1], lambda x : x.name)
-        if res is not None:
-            raise Redeclared(Type(), ast.name)
+        if self.step == 0:
+            res = self.lookup(ast.name, c[-1], lambda x : x.name)
+            if res is not None:
+                raise Redeclared(Type(), ast.name)
         field = []
         for i in ast.elements:
             res = self.lookup(i[0], field, lambda x: x[0])
@@ -280,17 +332,21 @@ class StaticChecker(BaseVisitor,Utils):
             fieldType = self.getType(i[1],c)
             field.append([i[0], fieldType])
         method = []
-        return [[Symbol(ast.name, StructType(ast.name, field, method))] +c[0]] + c[1:]
+        if self.step == 1:
+            method = self.lookup(ast.name, c[-1], lambda x : x.name).mtype.methods
+
+        return self.updateGlobal(Symbol(ast.name, StructType(ast.name, field, method)), c)
 
 
     def visitInterfaceType(self,ast: InterfaceType, c):
-        res = self.lookup(ast.name, c[-1], lambda x : x.name)
-        if res is not None:
-            raise Redeclared(Type(), ast.name)
+        if self.step ==0:
+            res = self.lookup(ast.name, c[-1], lambda x : x.name)
+            if res is not None:
+                raise Redeclared(Type(), ast.name)
         t = [[]] +c
         for i in ast.methods:
             t = self.visit(i, t)
-        return self.addToLocal(Symbol(ast.name, InterfaceType(ast.name, t[0])),c)
+        return self.updateGlobal(Symbol(ast.name, InterfaceType(ast.name, t[0])),c)
 
             
     
@@ -526,7 +582,7 @@ class StaticChecker(BaseVisitor,Utils):
         res = self.lookup(ast.field, fields,lambda x: x[0])
         if res is None:
             raise Undeclared(Field(),ast.field)
-        return res[1], None    
+        return self.getType(res[1],c), None    
     
     def visitIntLiteral(self,ast: IntLiteral, c):
         return IntType(), int(ast.value)
