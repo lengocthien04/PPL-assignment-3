@@ -28,21 +28,26 @@ class Symbol:
 
 
 class StaticChecker(BaseVisitor,Utils):
-        
-    
     def __init__(self,ast):
         self.ast = ast
         self.global_envi = [Symbol("getInt",MType([],IntType()),None),Symbol("putIntLn",MType([IntType()],VoidType()))]
         self.currentFunc = None
         self.ForBlock = None
-        self.isCheck = False
+        self.step = 0
     
     def check(self):
         return self.visit(self.ast,self.global_envi)
     
     def CheckTypeBasic(self, aType, bType):
         if type(aType) is ArrayType and type(bType) is ArrayType:
-            raise ValueError('chua xu li array nua huhu')
+            if len(aType.dimens) != len(bType.dimens):
+                return False
+            if not self.CheckTypeBasic(aType.eleType, bType.eleType):
+                return False
+            for i in range(len(aType.dimens)):
+                if aType.dimens[i] != bType.dimens[i]:
+                    return False
+            return True
         if type(aType) is StructType and type(bType) is StructType:
             return aType.name == bType.name
         if type(aType) is type(bType):
@@ -50,15 +55,14 @@ class StaticChecker(BaseVisitor,Utils):
         return False
     
     def CheckTypeComplex(self,aType, bType, c):
+        
         if type(aType) is FloatType and type(bType) is IntType:
             return True
         if type(aType) is InterfaceType and type(bType) is StructType:
             interface_method = aType.methods
-            # for i in interface_method:
-            #     print(i)
+
             struct_method = bType.methods
-            # for i in struct_method:
-            #     print(i)
+
             for i in interface_method:
                 res = self.lookup(i.name, struct_method, lambda x: x.name)
                 if res is None:
@@ -71,14 +75,29 @@ class StaticChecker(BaseVisitor,Utils):
                     if not self.CheckTypeBasic(i.mtype.partype[z], res.mtype.partype[z].mtype):
                         return False
             return True
+        if type(aType) is ArrayType and type(bType) is ArrayType:
+            if len(aType.dimens) != len(bType.dimens):
+                return False
+            if type(aType.eleType) is FloatType and type(bType.eleType) is IntType:
+                pass
+            elif not self.CheckTypeBasic(aType.eleType, bType.eleType):
+                return False 
+            for i in range(len(aType.dimens)):
+                if aType.dimens[i] != bType.dimens[i]:
+                    return False
+            return True
         return self.CheckTypeBasic(aType, bType)
     
     def getType(self, tp, c):
         parType = tp
+
         if isinstance(tp, tuple):
             parType = tp[0]
         try:
+
             parType = self.visit(parType, c)
+
+
             if type(parType) is Tuple:
                 parType = parType[0]
             if isinstance(parType, tuple):
@@ -95,6 +114,21 @@ class StaticChecker(BaseVisitor,Utils):
     
     def addToLocal(self, ele, c):
         return [[ele] +c[0]] + c[1:]
+    
+    def checkArrayEletype(self, eleList, eleType,c ):
+        if type(eleList) is list:
+            if len(eleList) == 0:
+                return True
+            for i in eleList:
+                if type(i) is not list and type(i) is not List:
+                    type_, value = self.visit(i,c)
+                    if not self.CheckTypeBasic(type_, eleType):
+                        return False
+                res = self.checkArrayEletype(i, eleType, c)
+                if not res:
+                    return False
+        return True
+    
 
     #symbol:
     #6 type : var, const, func, struct, interface, method
@@ -123,6 +157,11 @@ class StaticChecker(BaseVisitor,Utils):
             Symbol('putLn', MType([], VoidType()), None),
 
         ]]
+        self.step = 0
+        # for i in ast.decl:
+        #     if type(i) in [InterfaceType,StructType]:
+        #         c = self.visit(i,c)
+        
         reduce(lambda acc, ele: self.visit(ele, acc), ast.decl, c)
         return None
     
@@ -144,8 +183,10 @@ class StaticChecker(BaseVisitor,Utils):
             
         if ast.varInit :
             varInitType, varInitValue = self.visit(ast.varInit, c)
+            if type(varInitType) is VoidType:
+                raise TypeMismatch(ast)
             if varType is None: 
-                varType = self.visit(varInitType,c )
+                varType = self.getType(varInitType,c )
                 return [[Symbol(ast.varName, varType, varInitValue)] + c[0]] + c[1:]
             if not self.CheckTypeComplex(varType, varInitType, c):
                 raise TypeMismatch(ast)
@@ -214,9 +255,19 @@ class StaticChecker(BaseVisitor,Utils):
     def visitVoidType(self,ast, c):
         return VoidType()
     
-    def visitArrayType(self,ast, c):
-        raise ValueError('do nothing array')
-    
+    def visitArrayType(self,ast: ArrayType, c):
+        dim = []
+        for i in ast.dimens:
+            if type(i) is int:
+               dim.append(int(i))
+            else:
+               typ_, value = self.visit(i,c)
+               if type(typ_) is not IntType:
+                   return ast, None
+               dim.append(int(value))
+        eletype = self.getType(ast.eleType,c)
+        return ArrayType(dim, eletype), None
+                
     def visitStructType(self,ast: StructType, c):
         res = self.lookup(ast.name, c[-1], lambda x : x.name)
         if res is not None:
@@ -244,11 +295,16 @@ class StaticChecker(BaseVisitor,Utils):
             
     
     def visitBlock(self,ast: Block, c):
-        block =[[]]
+        block =[[]]+c
         if self.ForBlock:
-            block = [self.ForBlock]
-
-        reduce(lambda acc, ele: self.visit(ele, acc), ast.member, block + c)
+            block = [self.ForBlock] +c
+        for i in ast.member:
+            res = self.visit(i, block)
+            if isinstance(res,list): 
+               block = res
+            elif type(i) is MethCall or type(i) is FuncCall:
+                if type(res[0]) is not VoidType:
+                    raise TypeMismatch(i)
         return c
  
     def visitAssign(self,ast: Assign, c):
@@ -345,16 +401,28 @@ class StaticChecker(BaseVisitor,Utils):
         if ast.op in ['-', '*', '/']:
             if type(leftType) is IntType and type(rightType) is IntType:
                 if leftValue is not None and rightValue is not None:
-                    return IntType(), leftValue - rightValue
+                    if ast.op == '-':
+                        return IntType(), leftValue - rightValue
+                    elif ast.op == '*':
+                        return IntType(), leftValue * rightValue
+                    else:  # ast.op == '/'
+                        return IntType(), leftValue // rightValue  # Integer division for int types
                 return IntType(), None
             if type(leftType) in [IntType, FloatType] and type(rightType) in [IntType, FloatType]:
                 if leftValue is not None and rightValue is not None:
-                    return FloatType(), leftValue - rightValue
+                    if ast.op == '-':
+                        return FloatType(), leftValue - rightValue
+                    elif ast.op == '*':
+                        return FloatType(), leftValue * rightValue
+                    else:  # ast.op == '/'
+                        return FloatType(), leftValue / rightValue  # Float division
                 return FloatType(), None
             raise TypeMismatch(ast)
         if ast.op == '%':
             if type(leftType) is IntType and type(rightType) is IntType:
-                return IntType(), leftValue % rightValue
+                if leftValue is not None and rightValue is not None:
+                    return IntType(), leftValue % rightValue
+                return IntType(), None
             raise TypeMismatch(ast)
         if ast.op in ['==', '!=', '<=', '>=', '<', '>']:
             if type(leftType) is StringType and type(rightType) is StringType:
@@ -403,8 +471,28 @@ class StaticChecker(BaseVisitor,Utils):
                 raise TypeMismatch(ast)
         return func.mtype.rettype, None
 
-    def visitMethCall(self,ast, c):
-        raise ValueError('chua lam dau e')
+    def visitMethCall(self,ast: MethCall, c):
+        structType, structValue = self.visit(ast.receiver, c)
+        if type(structType) is not StructType and type(structType) is not InterfaceType:
+            raise TypeMismatch(ast)
+        struct = self.lookup(structType.name, c[-1], lambda x: x.name)
+        if struct is None:
+            raise Undeclared(Type(), struct.name)
+        if type(struct.mtype) is StructType or type(structType) is InterfaceType:
+            method = self.lookup(ast.metName, struct.mtype.methods, lambda x: x.name)
+
+            if method is None:
+                raise Undeclared(Method(), ast.metName)
+            if len(ast.args) != len(method.mtype.partype):
+                raise TypeMismatch(ast)
+            for i in range(len(ast.args)):
+                method_param_type = self.getType(method.mtype.partype[i].mtype,c )
+                argsType, argsValue = self.visit(ast.args[i],c)
+                if not self.CheckTypeBasic(method_param_type, argsType):
+                    raise TypeMismatch(ast)        
+            return method.mtype.rettype, None
+
+            
     
     def visitId(self,ast: Id, c):
         for block in c:
@@ -413,11 +501,32 @@ class StaticChecker(BaseVisitor,Utils):
                 return res.mtype, res.value
         raise Undeclared(Identifier(), ast.name)
     
-    def visitArrayCell(self,ast, c):
-        raise ValueError('chua lam dau e')
-    
-    def visitFieldAccess(self,ast, c):
-        raise ValueError('chua lam dau e')
+    def visitArrayCell(self,ast: ArrayCell, c):
+        arrType, arrValue = self.visit(ast.arr, c)
+        if type(arrType) is not ArrayType:
+            raise TypeMismatch(ast)
+        if len(ast.idx) > len(arrType.dimens):
+            raise TypeMismatch(ast)
+        for i in ast.idx:
+            idxType, idxValue = self.visit(i, c)
+            if type(idxType) is not IntType:
+                raise TypeMismatch(ast)
+        if len(arrType.dimens) > len(ast.idx) :
+            return ArrayType(arrType.dimens[len(arrType.dimens) - len(ast.idx)  :], arrType.eleType), None
+        return arrType.eleType, None
+            
+    def visitFieldAccess(self,ast: FieldAccess, c):
+        structType, structValue = self.visit(ast.receiver, c)
+        if type(structType) is not StructType:
+            raise TypeMismatch(ast)
+        struct = self.lookup(structType.name, c[-1], lambda x: x.name)
+        if struct is None:
+            raise Undeclared(Type(), struct.name)
+        fields = struct.mtype.elements
+        res = self.lookup(ast.field, fields,lambda x: x[0])
+        if res is None:
+            raise Undeclared(Field(),ast.field)
+        return res[1], None    
     
     def visitIntLiteral(self,ast: IntLiteral, c):
         return IntType(), int(ast.value)
@@ -431,9 +540,18 @@ class StaticChecker(BaseVisitor,Utils):
     def visitStringLiteral(self,ast: StringLiteral, c):
         return StringType(), ast.value
 
-    def visitArrayLiteral(self,ast, c):
-        raise ValueError('chua lam dau e')
-
+    def visitArrayLiteral(self,ast: ArrayLiteral, c):
+        dimens = []
+        for i in ast.dimens:
+            type_, value = self.visit(i, c)
+            if type(type_) is not IntType:
+                raise TypeMismatch(ast)
+            dimens.append(int(value))
+        eleType = self.getType(ast.eleType,c)
+        if not self.checkArrayEletype(ast.value, eleType, c):
+            raise TypeMismatch(ast)
+        return ArrayType(dimens, eleType), None
+        
     def visitStructLiteral(self,ast: StructLiteral, c):
         struct = None
         for block in c:
@@ -451,4 +569,4 @@ class StaticChecker(BaseVisitor,Utils):
         return (struct.mtype, None)
             
     def visitNilLiteral(self,ast, c):
-        raise ValueError('chua lam dau e')
+        return NilLiteral(), None

@@ -712,1135 +712,1113 @@ class CheckSuite(unittest.TestCase):
                 """
         expect = """Type Mismatch: Return(StructLiteral(Student,[(name,StringLiteral("s.name"))]))\n"""
         self.assertTrue(TestChecker.test(input,expect,450))
-    # def test_451(self):
-    #     input = """
-    #             func Test() int {
-    #                 var a int = 3;
-    #                 return a;
-    #             }
-    #             var foo = 12;
-    #             var a int = foo();
-    #             """
-    #     expect = """Type Mismatch: FuncCall(foo,[])\n"""
-    #     self.assertTrue(TestChecker.test(input,expect,451))
-    # def test_452(self):
-    #     input = """
-    #             func Test() int {
-    #                 var a int = 3;
-    #                 return a;
-    #             }
-    #             var foo = 12;
-    #             var a int = getABC();
-    #             """
-    #     expect = """Undeclared Function: getABC\n"""
-    #     self.assertTrue(TestChecker.test(input,expect,452))
-    # def test_453(self):
-    #     input = """
-    #             func Test() int {
-    #                 var a int = 3;
-    #                 return a;
-    #             }
-    #             var foo = 12;
-    #             var a int = Test(2);
-    #             """
-    #     expect = """Type Mismatch: FuncCall(Test,[IntLiteral(2)])\n"""
-    #     self.assertTrue(TestChecker.test(input,expect,453))
-    # def test_454(self):
-    #     input = """
-    #             func Test(a float, b int) int {
-    #                 var a int = 3;
-    #                 return a;
-    #             }
-    #             var foo = 12;
-    #             var a int = Test(1.2,2);
-    #             """
-    #     expect = """"""
-    #     self.assertTrue(TestChecker.test(input,expect,454))
-    # def test_455(self):
-    #     input = """
-    #             func Test(a float, b int) int {
-    #                 var a int = 3;
-    #                 return a;
-    #             }
-    #             var foo = 12;
-    #             var a int = Test(1,2);
-    #             """
-    #     expect = """Type Mismatch: FuncCall(Test,[IntLiteral(1),IntLiteral(2)])\n"""
-    #     self.assertTrue(TestChecker.test(input,expect,455))
-    # def test_456(self):
-    #     input = """
-    #             func Test(a int, b int) int {
-    #                 var a int = 3;
-    #                 return a;
-    #             }
-    #             var foo = 12;
-    #             var a int = Test(1,2)+12-3*6-Test(1,-2);
-    #             """
-    #     expect = """"""
-    #     self.assertTrue(TestChecker.test(input,expect,456))
-    # def test_457(self):
-    #     input = """
-    #             type Car struct {
-    #                 speed int
-    #             }
-    #             func Test(a int, b int) int {
-    #                 var a int = 3;
-    #                 var c Car = Car { speed: a };
-    #                 return a.speed;
-    #             }
-    #             """
-    #     expect = """Type Mismatch: FieldAccess(Id(a),speed)\n"""
-    #     self.assertTrue(TestChecker.test(input,expect,457))
-    # def test_458(self):
-    #     input = """
-    #             type Car struct {
-    #                 speed int
-    #                 name string
-    #             }
-    #             func Test(a int, b int) int {
-    #                 var a int = 3;
-    #                 var c Car = Car { speed: a };
-    #                 return c.speed;
-    #             }
-    #             """
-    #     expect = """"""
-    #     self.assertTrue(TestChecker.test(input,expect,458))
-    # def test_459(self):
-    #     input = """
-    #             type Car struct {
-    #                 speed int
-    #                 name string
-    #             }
-    #             func Test(a int, b int) int {
-    #                 var a int = 3;
-    #                 var c Car = Car { speed: a };
-    #                 return c.name;
-    #             }
-    #             """
-    #     expect = """Type Mismatch: Return(FieldAccess(Id(c),name))\n"""
-    #     self.assertTrue(TestChecker.test(input,expect,459))
-    # def test_460(self):
-    #     input = """
-    #             type Car struct {
-    #                 speed int
-    #                 name string
-    #             }
-    #             func Test(a int, b int) int {
-    #                 var a int = 3;
-    #                 var c Car = Car { speed: a };
-    #                 return c.height;
-    #             }
-    #             """
-    #     expect = """Undeclared Field: height\n"""
-    #     self.assertTrue(TestChecker.test(input,expect,460))
-    # def test_461(self):
-    #     input = """
-    #             type People interface {
-    #                 GetName() string
-    #             }
-    #             type Student struct {
-    #                 name string
-    #             }
-    #             func (s Student) GetName() string {
-    #                 return "s.name"
-    #             }
-    #             type Car struct {
-    #                 speed int
-    #                 name string
-    #                 driver Student
-    #             }
-    #             func Test(a int, b int) string {
-    #                 var a int = 3;
-    #                 var c Car = Car { speed: a };
-    #                 return c.driver.name;
-    #             }
-    #             """
-    #     expect = """"""
-    #     self.assertTrue(TestChecker.test(input,expect,461))
+    def test_451(self):
+        input = """
+                func Test() int {
+                    var a int = 3;
+                    return a;
+                }
+                var foo = 12;
+                var a int = foo();
+                """
+        expect = """Type Mismatch: FuncCall(foo,[])\n"""
+        self.assertTrue(TestChecker.test(input,expect,451))
+    def test_452(self):
+        input = """
+                func Test() int {
+                    var a int = 3;
+                    return a;
+                }
+                var foo = 12;
+                var a int = getABC();
+                """
+        expect = """Undeclared Function: getABC\n"""
+        self.assertTrue(TestChecker.test(input,expect,452))
+    def test_453(self):
+        input = """
+                func Test() int {
+                    var a int = 3;
+                    return a;
+                }
+                var foo = 12;
+                var a int = Test(2);
+                """
+        expect = """Type Mismatch: FuncCall(Test,[IntLiteral(2)])\n"""
+        self.assertTrue(TestChecker.test(input,expect,453))
+    def test_454(self):
+        input = """
+                func Test(a float, b int) int {
+                    var a int = 3;
+                    return a;
+                }
+                var foo = 12;
+                var a int = Test(1.2,2);
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,454))
+    def test_455(self):
+        input = """
+                func Test(a float, b int) int {
+                    var a int = 3;
+                    return a;
+                }
+                var foo = 12;
+                var a int = Test(1,2);
+                """
+        expect = """Type Mismatch: FuncCall(Test,[IntLiteral(1),IntLiteral(2)])\n"""
+        self.assertTrue(TestChecker.test(input,expect,455))
+    def test_456(self):
+        input = """
+                func Test(a int, b int) int {
+                    var a int = 3;
+                    return a;
+                }
+                var foo = 12;
+                var a int = Test(1,2)+12-3*6-Test(1,-2);
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,456))
+    def test_457(self):
+        input = """
+                type Car struct {
+                    speed int
+                }
+                func Test(a int, b int) int {
+                    var a int = 3;
+                    var c Car = Car { speed: a };
+                    return a.speed;
+                }
+                """
+        expect = """Type Mismatch: FieldAccess(Id(a),speed)\n"""
+        self.assertTrue(TestChecker.test(input,expect,457))
+    def test_458(self):
+        input = """
+                type Car struct {
+                    speed int
+                    name string
+                }
+                func Test(a int, b int) int {
+                    var a int = 3;
+                    var c Car = Car { speed: a };
+                    return c.speed;
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,458))
+    def test_459(self):
+        input = """
+                type Car struct {
+                    speed int
+                    name string
+                }
+                func Test(a int, b int) int {
+                    var a int = 3;
+                    var c Car = Car { speed: a };
+                    return c.name;
+                }
+                """
+        expect = """Type Mismatch: Return(FieldAccess(Id(c),name))\n"""
+        self.assertTrue(TestChecker.test(input,expect,459))
+    def test_460(self):
+        input = """
+                type Car struct {
+                    speed int
+                    name string
+                }
+                func Test(a int, b int) int {
+                    var a int = 3;
+                    var c Car = Car { speed: a };
+                    return c.height;
+                }
+                """
+        expect = """Undeclared Field: height\n"""
+        self.assertTrue(TestChecker.test(input,expect,460))
+    def test_461(self):
+        input = """
+                type People interface {
+                    GetName() string
+                }
+                type Student struct {
+                    name string
+                }
+                func (s Student) GetName() string {
+                    return "s.name"
+                }
+                type Car struct {
+                    speed int
+                    name string
+                    driver Student
+                }
+                func Test(a int, b int) string {
+                    var a int = 3;
+                    var c Car = Car { speed: a };
+                    return c.driver.name;
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,461))
 
 
+    def test_462(self):
+        input = """
+                type People interface {
+                    GetName() string
+                }
+                type Student struct {
+                    name string
+                }
+                func (s Student) GetName() string {
+                    return "s.name"
+                }
+                type Car struct {
+                    speed int
+                    name string
+                    driver Student
+                }
+                func Test(a int, b int) string {
+                    var a int = 3;
+                    var c Car = Car { speed: a, driver: Student { name: "s.name" } };
+                    return c.driver.name;
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,462))
 
+    def test_463(self):
+        input = """
+                type People interface {
+                    GetName() string
+                }
+                type Student struct {
+                    name string
+                }
+                func (s Student) GetName() string {
+                    return "s.name"
+                }
+                type Car struct {
+                    speed int
+                    name string
+                    driver Student
+                }
+                type Abc struct {
+                    age int
+                }
+                func Test(a int, b int) string {
+                    var a int = 3;
+                    var c Car = Car { speed: a, driver: Student { name: "s.name" } };
+                    if (a == c.speed) {
+                        return c.driver.name;
+                    } else {
+                        var z = Abc { age: a };
+                        var i = z.age+a;
+                        return "ok";
+                    }
+                    return c.driver.name;
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,463))
+    def test_464(self):
+        input = """
+                type People interface {
+                    GetName() string
+                }
+                type Student struct {
+                    name string
+                    age int
+                }
+                func (s Student) GetName() string {
+                    return "s.name"
+                }
+                type Car struct {
+                    speed int
+                    name string
+                    driver Student
+                }
+                type Abc struct {
+                    age int
+                }
+                func getDriver(c Car) Student {
+                    return c.driver
+                }
+                func main () {
 
+                    var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
+                    var d = getDriver(c)
+                    var z string = d.name+"OK";
+                    var t int = d.age*2+4;
+                    return;
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,464))
+    def test_465(self):
+        input = """
+                type People interface {
+                    GetName() string
+                }
+                type Student struct {
+                    name string
+                    age int
+                }
+                func (s Student) GetName() string {
+                    return "s.name"
+                }
+                type Car struct {
+                    speed int
+                    name string
+                    driver Student
+                }
+                type Abc struct {
+                    age int
+                }
+                func getDriver(c Car) Student {
+                    return c.driver
+                }
+                func main () {
 
-    # def test_462(self):
-    #     input = """
-    #             type People interface {
-    #                 GetName() string
-    #             }
-    #             type Student struct {
-    #                 name string
-    #             }
-    #             func (s Student) GetName() string {
-    #                 return "s.name"
-    #             }
-    #             type Car struct {
-    #                 speed int
-    #                 name string
-    #                 driver Student
-    #             }
-    #             func Test(a int, b int) string {
-    #                 var a int = 3;
-    #                 var c Car = Car { speed: a, driver: Student { name: "s.name" } };
-    #                 return c.driver.name;
-    #             }
-    #             """
-    #     expect = """"""
-    #     self.assertTrue(TestChecker.test(input,expect,462))
+                    var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
+                    var d = getDriver(c.driver)
+                    var z string = d.name+"OK";
+                    var t int = d.age*2+4;
+                    return;
+                }
+                """
+        expect = """Type Mismatch: FuncCall(getDriver,[FieldAccess(Id(c),driver)])\n"""
+        self.assertTrue(TestChecker.test(input,expect,465))
+    def test_466(self):
+        input = """
+                type People interface {
+                    GetName() string
+                }
+                type Student struct {
+                    name string
+                    age int
+                }
+                func (s Student) GetName() string {
+                    return "s.name"
+                }
+                type Car struct {
+                    speed int
+                    name string
+                    driver Student
+                }
+                type Abc struct {
+                    age int
+                }
+                func getDriver(c People) Student {
+                    return Student { name: "s.name" };
+                }
+                func main () {
 
-#     def test_463(self):
-#         input = """
-#                 type People interface {
-#                     GetName() string
-#                 }
-#                 type Student struct {
-#                     name string
-#                 }
-#                 func (s Student) GetName() string {
-#                     return "s.name"
-#                 }
-#                 type Car struct {
-#                     speed int
-#                     name string
-#                     driver Student
-#                 }
-#                 type Abc struct {
-#                     age int
-#                 }
-#                 func Test(a int, b int) string {
-#                     var a int = 3;
-#                     var c Car = Car { speed: a, driver: Student { name: "s.name" } };
-#                     if (a == c.speed) {
-#                         return c.driver.name;
-#                     } else {
-#                         var z = Abc { age: a };
-#                         var i = z.age+a;
-#                         return "ok";
-#                     }
-#                     return c.driver.name;
-#                 }
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,463))
-#     def test_464(self):
-#         input = """
-#                 type People interface {
-#                     GetName() string
-#                 }
-#                 type Student struct {
-#                     name string
-#                     age int
-#                 }
-#                 func (s Student) GetName() string {
-#                     return "s.name"
-#                 }
-#                 type Car struct {
-#                     speed int
-#                     name string
-#                     driver Student
-#                 }
-#                 type Abc struct {
-#                     age int
-#                 }
-#                 func getDriver(c Car) Student {
-#                     return c.driver
-#                 }
-#                 func main () {
+                    var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
+                    var d = getDriver(c.driver)
+                    var z string = d.name+"OK";
+                    var t int = d.age*2+4;
+                    return;
+                }
+                """
+        expect = """Type Mismatch: FuncCall(getDriver,[FieldAccess(Id(c),driver)])\n"""
+        self.assertTrue(TestChecker.test(input,expect,466))
+    def test_467(self):
+        input = """
+                type People interface {
+                    GetName() string
+                }
+                type Student struct {
+                    name string
+                    age int
+                }
+                func (s Student) GetName() string {
+                    return "s.name"
+                }
+                type Car struct {
+                    speed int
+                    name string
+                    driver Student
+                }
+                type Abc struct {
+                    age int
+                }
+                func (c Car) getDriver() Student {
+                    return Student { name: "s.name" };
+                }
+                func main () {
 
-#                     var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
-#                     var d = getDriver(c)
-#                     var z string = d.name+"OK";
-#                     var t int = d.age*2+4;
-#                     return;
-#                 }
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,464))
-#     def test_465(self):
-#         input = """
-#                 type People interface {
-#                     GetName() string
-#                 }
-#                 type Student struct {
-#                     name string
-#                     age int
-#                 }
-#                 func (s Student) GetName() string {
-#                     return "s.name"
-#                 }
-#                 type Car struct {
-#                     speed int
-#                     name string
-#                     driver Student
-#                 }
-#                 type Abc struct {
-#                     age int
-#                 }
-#                 func getDriver(c Car) Student {
-#                     return c.driver
-#                 }
-#                 func main () {
+                    var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
+                    c.getDriver()                    
+                    return;
+                }
+                """
+        expect = """Type Mismatch: MethodCall(Id(c),getDriver,[])\n"""
+        self.assertTrue(TestChecker.test(input,expect,467))
+    def test_468(self):
+        input = """
+                type People interface {
+                    GetName() string
+                }
+                type Student struct {
+                    name string
+                    age int
+                }
+                func (s Student) GetName() string {
+                    return "s.name"
+                }
+                type Car struct {
+                    speed int
+                    name string
+                    driver Student
+                }
+                type Abc struct {
+                    age int
+                }
+                func (c Car) getDriver() Student {
+                    return Student { name: "s.name" };
+                }
+                func main () {
 
-#                     var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
-#                     var d = getDriver(c.driver)
-#                     var z string = d.name+"OK";
-#                     var t int = d.age*2+4;
-#                     return;
-#                 }
-#                 """
-#         expect = """Type Mismatch: FuncCall(getDriver,[FieldAccess(Id(c),driver)])\n"""
-#         self.assertTrue(TestChecker.test(input,expect,465))
-#     def test_466(self):
-#         input = """
-#                 type People interface {
-#                     GetName() string
-#                 }
-#                 type Student struct {
-#                     name string
-#                     age int
-#                 }
-#                 func (s Student) GetName() string {
-#                     return "s.name"
-#                 }
-#                 type Car struct {
-#                     speed int
-#                     name string
-#                     driver Student
-#                 }
-#                 type Abc struct {
-#                     age int
-#                 }
-#                 func getDriver(c People) Student {
-#                     return Student { name: "s.name" };
-#                 }
-#                 func main () {
+                    var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
+                    var a int ;
+                    a.getDriver()                    
+                    return;
+                }
+                """
+        expect = """Type Mismatch: MethodCall(Id(a),getDriver,[])\n"""
+        self.assertTrue(TestChecker.test(input,expect,468))
+    def test_469(self):
+        input = """
+                type People interface {
+                    GetName() string
+                }
+                type Student struct {
+                    name string
+                    age int
+                }
+                func (s Student) GetName() string {
+                    return s.name
+                }
+                func (s Student) getDriver(a int) Student {
+                    return Student { name: "s.name" };
+                }
+                type Car struct {
+                    speed int
+                    name string
+                    driver Student
+                }
+                type Abc struct {
+                    age int
+                }
+                func (c Car) getDriver() Student {
+                    return Student { name: "s.name" };
+                }
+                func main () {
 
-#                     var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
-#                     var d = getDriver(c.driver)
-#                     var z string = d.name+"OK";
-#                     var t int = d.age*2+4;
-#                     return;
-#                 }
-#                 """
-#         expect = """Type Mismatch: FuncCall(getDriver,[FieldAccess(Id(c),driver)])\n"""
-#         self.assertTrue(TestChecker.test(input,expect,466))
-#     def test_467(self):
-#         input = """
-#                 type People interface {
-#                     GetName() string
-#                 }
-#                 type Student struct {
-#                     name string
-#                     age int
-#                 }
-#                 func (s Student) GetName() string {
-#                     return "s.name"
-#                 }
-#                 type Car struct {
-#                     speed int
-#                     name string
-#                     driver Student
-#                 }
-#                 type Abc struct {
-#                     age int
-#                 }
-#                 func (c Car) getDriver() Student {
-#                     return Student { name: "s.name" };
-#                 }
-#                 func main () {
+                    var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
+                    var d = Student { name: "s.name" };
+                    d.getDriver()                    
+                    return;
+                }
+                """
+        expect = """Type Mismatch: MethodCall(Id(d),getDriver,[])\n"""
+        self.assertTrue(TestChecker.test(input,expect,469))
+    def test_470(self):
+        input = """
+                type People interface {
+                    GetName() string
+                }
+                type Student struct {
+                    name string
+                    age int
+                }
+                func (s Student) GetName() string {
+                    return s.name
+                }
+                func (s Student) getDriver(a int) Student {
+                    return Student { name: "s.name" };
+                }
+                type Car struct {
+                    speed int
+                    name string
+                    driver Student
+                }
+                type Abc struct {
+                    age int
+                }
+                func (c Car) getDriver() Student {
+                    return Student { name: "s.name" };
+                }
+                func main () {
 
-#                     var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
-#                     c.getDriver()                    
-#                     return;
-#                 }
-#                 """
-#         expect = """Type Mismatch: MethodCall(Id(c),getDriver,[])\n"""
-#         self.assertTrue(TestChecker.test(input,expect,467))
-#     def test_468(self):
-#         input = """
-#                 type People interface {
-#                     GetName() string
-#                 }
-#                 type Student struct {
-#                     name string
-#                     age int
-#                 }
-#                 func (s Student) GetName() string {
-#                     return "s.name"
-#                 }
-#                 type Car struct {
-#                     speed int
-#                     name string
-#                     driver Student
-#                 }
-#                 type Abc struct {
-#                     age int
-#                 }
-#                 func (c Car) getDriver() Student {
-#                     return Student { name: "s.name" };
-#                 }
-#                 func main () {
+                    var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
+                    var d = Student { name: "s.name" };
+                    d.doSomething()                    
+                    return;
+                }
+                """
+        expect = """Undeclared Method: doSomething\n"""
+        self.assertTrue(TestChecker.test(input,expect,470))
+    def test_471(self):
+        input = """
+                type People interface {
+                    GetName() string
+                }
+                type Student struct {
+                    name string
+                    age int
+                }
+                func (s Student) getName() string {
+                    return s.name
+                }
+                type Car struct {
+                    speed int
+                    name string
+                    driver Student
+                }
+                func (c Car) getDriver() Student {
+                    return Student { name: "s.name" };
+                }
+                func (c Car) getSpeed() int {
+                    return c.speed
+                }
+                func main () string{
 
-#                     var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
-#                     var a int ;
-#                     a.getDriver()                    
-#                     return;
-#                 }
-#                 """
-#         expect = """Type Mismatch: MethodCall(Id(a),getDriver,[])\n"""
-#         self.assertTrue(TestChecker.test(input,expect,468))
-#     def test_469(self):
-#         input = """
-#                 type People interface {
-#                     GetName() string
-#                 }
-#                 type Student struct {
-#                     name string
-#                     age int
-#                 }
-#                 func (s Student) GetName() string {
-#                     return s.name
-#                 }
-#                 func (s Student) getDriver(a int) Student {
-#                     return Student { name: "s.name" };
-#                 }
-#                 type Car struct {
-#                     speed int
-#                     name string
-#                     driver Student
-#                 }
-#                 type Abc struct {
-#                     age int
-#                 }
-#                 func (c Car) getDriver() Student {
-#                     return Student { name: "s.name" };
-#                 }
-#                 func main () {
+                    var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
+                    var d = Student { name: "s.name" };
+                    return d.getName()+c.getDriver().getName();
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,471))
+    def test_472(self):
+        input = """
+                type People interface {
+                    GetName() string
+                }
+                type Student struct {
+                    name string
+                    age int
+                }
+                func (s Student) getName() string {
+                    return s.name
+                }
+                type Car struct {
+                    speed int
+                    name string
+                    driver Student
+                }
+                func (c Car) getDriver() Student {
+                    return Student { name: "s.name" };
+                }
+                func (c Car) getSpeed() int {
+                    return c.speed
+                }
+                func create(a string) Student {
+                    return Student { name: a };
+                }
+                func main () string{
 
-#                     var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
-#                     var d = Student { name: "s.name" };
-#                     d.getDriver()                    
-#                     return;
-#                 }
-#                 """
-#         expect = """Type Mismatch: MethodCall(Id(d),getDriver,[])\n"""
-#         self.assertTrue(TestChecker.test(input,expect,469))
-#     def test_470(self):
-#         input = """
-#                 type People interface {
-#                     GetName() string
-#                 }
-#                 type Student struct {
-#                     name string
-#                     age int
-#                 }
-#                 func (s Student) GetName() string {
-#                     return s.name
-#                 }
-#                 func (s Student) getDriver(a int) Student {
-#                     return Student { name: "s.name" };
-#                 }
-#                 type Car struct {
-#                     speed int
-#                     name string
-#                     driver Student
-#                 }
-#                 type Abc struct {
-#                     age int
-#                 }
-#                 func (c Car) getDriver() Student {
-#                     return Student { name: "s.name" };
-#                 }
-#                 func main () {
+                    var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
+                    var d = Student { name: "s.name" };
+                    return d.getName()+create("abc").getName()+c.getDriver().getName();
+                    return create( d.getName()+create("abc").getName()+c.getDriver().getName()).getName();
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,472))
+    def test_473(self):
+        input = """
+                type People interface {
+                    GetName() string
+                }
+                type Student struct {
+                    name string
+                    age int
+                }
+                func (s Student) getName() string {
+                    return s.name
+                }
+                type Car struct {
+                    speed int
+                    name string
+                    driver Student
+                }
+                func (c Car) getDriver() Student {
+                    return Student { name: "s.name" };
+                }
+                func (c Car) getSpeed(s Student) {
+                    return 
+                }
+                func create(a string) Student {
+                    return Student { name: a };
+                }
+                func main (){
 
-#                     var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
-#                     var d = Student { name: "s.name" };
-#                     d.doSomething()                    
-#                     return;
-#                 }
-#                 """
-#         expect = """Undeclared Method: doSomething\n"""
-#         self.assertTrue(TestChecker.test(input,expect,470))
-#     def test_471(self):
-#         input = """
-#                 type People interface {
-#                     GetName() string
-#                 }
-#                 type Student struct {
-#                     name string
-#                     age int
-#                 }
-#                 func (s Student) getName() string {
-#                     return s.name
-#                 }
-#                 type Car struct {
-#                     speed int
-#                     name string
-#                     driver Student
-#                 }
-#                 func (c Car) getDriver() Student {
-#                     return Student { name: "s.name" };
-#                 }
-#                 func (c Car) getSpeed() int {
-#                     return c.speed
-#                 }
-#                 func main () string{
+                    var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
+                    c.getSpeed(Student { name: "s.name" });
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,473))
+    def test_474(self):
+        input = """
+                type People interface {
+                    GetName() string
+                }
+                type Student struct {
+                    name string
+                    age int
+                }
+                func (s Student) getName() string {
+                    return s.name
+                }
+                type Car struct {
+                    speed int
+                    name string
+                    driver Student
+                }
+                func (c Car) getDriver() Student {
+                    return Student { name: "s.name" };
+                }
+                func (c Car) getSpeed(s Student,a int,b float, c,d string) int {
+                    return c.speed
+                }
+                func create(a string) Student {
+                    return Student { name: a };
+                }
+                func main (){
 
-#                     var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
-#                     var d = Student { name: "s.name" };
-#                     return d.getName()+c.getDriver().getName();
-#                 }
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,471))
-#     def test_472(self):
-#         input = """
-#                 type People interface {
-#                     GetName() string
-#                 }
-#                 type Student struct {
-#                     name string
-#                     age int
-#                 }
-#                 func (s Student) getName() string {
-#                     return s.name
-#                 }
-#                 type Car struct {
-#                     speed int
-#                     name string
-#                     driver Student
-#                 }
-#                 func (c Car) getDriver() Student {
-#                     return Student { name: "s.name" };
-#                 }
-#                 func (c Car) getSpeed() int {
-#                     return c.speed
-#                 }
-#                 func create(a string) Student {
-#                     return Student { name: a };
-#                 }
-#                 func main () string{
+                    var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
+                    c.getSpeed(Student { name: "s.name" },1,1.2+2,"abc","abc");
+                }
+                """
+        expect = """Type Mismatch: FieldAccess(Id(c),speed)\n"""
+        self.assertTrue(TestChecker.test(input,expect,474))
+    def test_475(self):
+        input = """
+                type People interface {
+                    GetName() string
+                }
+                type Student struct {
+                    name string
+                    age int
+                }
+                func (s Student) getName() string {
+                    return s.name
+                }
+                type Car struct {
+                    speed int
+                    name string
+                    driver Student
+                }
+                func (c Car) getDriver() Student {
+                    return Student { name: "s.name" };
+                }
+                func (c Car) getSpeed(s Student,a int,b float, z,d string) int {
+                    return c.speed
+                }
+                func create(a string) Student {
+                    return Student { name: a };
+                }
+                func main (){
 
-#                     var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
-#                     var d = Student { name: "s.name" };
-#                     return d.getName()+create("abc").getName()+c.getDriver().getName();
-#                     return create( d.getName()+create("abc").getName()+c.getDriver().getName()).getName();
-#                 }
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,472))
-#     def test_473(self):
-#         input = """
-#                 type People interface {
-#                     GetName() string
-#                 }
-#                 type Student struct {
-#                     name string
-#                     age int
-#                 }
-#                 func (s Student) getName() string {
-#                     return s.name
-#                 }
-#                 type Car struct {
-#                     speed int
-#                     name string
-#                     driver Student
-#                 }
-#                 func (c Car) getDriver() Student {
-#                     return Student { name: "s.name" };
-#                 }
-#                 func (c Car) getSpeed(s Student) {
-#                     return 
-#                 }
-#                 func create(a string) Student {
-#                     return Student { name: a };
-#                 }
-#                 func main (){
-
-#                     var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
-#                     c.getSpeed(Student { name: "s.name" });
-#                 }
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,473))
-#     def test_474(self):
-#         input = """
-#                 type People interface {
-#                     GetName() string
-#                 }
-#                 type Student struct {
-#                     name string
-#                     age int
-#                 }
-#                 func (s Student) getName() string {
-#                     return s.name
-#                 }
-#                 type Car struct {
-#                     speed int
-#                     name string
-#                     driver Student
-#                 }
-#                 func (c Car) getDriver() Student {
-#                     return Student { name: "s.name" };
-#                 }
-#                 func (c Car) getSpeed(s Student,a int,b float, c,d string) int {
-#                     return c.speed
-#                 }
-#                 func create(a string) Student {
-#                     return Student { name: a };
-#                 }
-#                 func main (){
-
-#                     var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
-#                     c.getSpeed(Student { name: "s.name" },1,1.2+2,"abc","abc");
-#                 }
-#                 """
-#         expect = """Type Mismatch: FieldAccess(Id(c),speed)\n"""
-#         self.assertTrue(TestChecker.test(input,expect,474))
-#     def test_475(self):
-#         input = """
-#                 type People interface {
-#                     GetName() string
-#                 }
-#                 type Student struct {
-#                     name string
-#                     age int
-#                 }
-#                 func (s Student) getName() string {
-#                     return s.name
-#                 }
-#                 type Car struct {
-#                     speed int
-#                     name string
-#                     driver Student
-#                 }
-#                 func (c Car) getDriver() Student {
-#                     return Student { name: "s.name" };
-#                 }
-#                 func (c Car) getSpeed(s Student,a int,b float, z,d string) int {
-#                     return c.speed
-#                 }
-#                 func create(a string) Student {
-#                     return Student { name: a };
-#                 }
-#                 func main (){
-
-#                     var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
-#                     c.getSpeed(Student { name: "s.name" },1,1.2+2,"abc");
-#                 }
-#                 """
-#         expect = """Type Mismatch: MethodCall(Id(c),getSpeed,[StructLiteral(Student,[(name,StringLiteral("s.name"))]),IntLiteral(1),BinaryOp(FloatLiteral(1.2),+,IntLiteral(2)),StringLiteral("abc")])\n"""
-#         self.assertTrue(TestChecker.test(input,expect,475))
-#     def test_476(self):
-#         input = """
-#                 var a  = getInt();
-#                 var b int = a
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,476))
-#     def test_477(self):
-#         input = """
-#                 func main (){
-#                 getInt();
-#                 var a = putInt(1);
-#                 putIntLn(2);
-#                 getFloat();
-#                 putFloat(3.0);
-#                 putFloatLn(4.0);
-#                 getBool();
-#                 putBool(true);
-#                 putBoolLn(false);
-#                 putString("abc");
-#                 putStringLn("def");
-#                 putLn();
+                    var c = Car{speed:100,name:"abc",driver:Student{ age:20 }}
+                    c.getSpeed(Student { name: "s.name" },1,1.2+2,"abc");
+                }
+                """
+        expect = """Type Mismatch: MethodCall(Id(c),getSpeed,[StructLiteral(Student,[(name,StringLiteral("s.name"))]),IntLiteral(1),BinaryOp(FloatLiteral(1.2),+,IntLiteral(2)),StringLiteral("abc")])\n"""
+        self.assertTrue(TestChecker.test(input,expect,475))
+    def test_476(self):
+        input = """
+                var a  = getInt();
+                var b int = a
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,476))
+    def test_477(self):
+        input = """
+                func main (){
+                getInt();
+                var a = putInt(1);
+                putIntLn(2);
+                getFloat();
+                putFloat(3.0);
+                putFloatLn(4.0);
+                getBool();
+                putBool(true);
+                putBoolLn(false);
+                putString("abc");
+                putStringLn("def");
+                putLn();
                 
-#                 }
-#                 """
-#         expect = """Type Mismatch: FuncCall(getInt,[])\n"""
-#         self.assertTrue(TestChecker.test(input,expect,477))
-#     def test_478(self):
-#         input = """     
-#                 var a = putInt(1);
-#                 """
-#         expect = """Type Mismatch: VarDecl(a,FuncCall(putInt,[IntLiteral(1)]))\n"""
-#         self.assertTrue(TestChecker.test(input,expect,478))
-#     def test_479(self):
-#         input = """     
-#                 func main () {
-#                     putInt(1);
-#                     putIntLn(2);
-#                     putFloat(3.0);
-#                     putFloatLn(4.0);
-#                     putBool(true);
-#                     putBoolLn(false);
-#                     putString("abc");
-#                     putStringLn("def");
-#                     putLn();
-#                 }
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,479))
-#     def test_480(self):
-#         input = """     
-#                 func main () {
-#                     putInt(1);
-#                     putIntLn(2);
-#                     putFloat(3.0);
-#                     putFloatLn(4.0);
-#                     putBool(true);
-#                     putBoolLn(false);
-#                     putString("abc");
-#                     putStringLn("def");
-#                     putLn();
-#                     getInt();
-#                 }
-#                 """
-#         expect = """Type Mismatch: FuncCall(getInt,[])\n"""
-#         self.assertTrue(TestChecker.test(input,expect,480))
-#     def test_481(self):
-#         input = """     
-#                 type Student struct {
-#                     name string
-#                     age int
-#                 }
-#                 func (s Student) getName() string {
-#                     return s.name
-#                 }
-#                 func main () {
-#                     var s = Student { name: "s.name" };
-#                     s.getName();
-#                 }
-#                 """
-#         expect = """Type Mismatch: MethodCall(Id(s),getName,[])\n"""
-#         self.assertTrue(TestChecker.test(input,expect,481))
-#     def test_482(self):
-#         input = """     
-#                 type Student struct {
-#                     name string
-#                     age int
-#                 }
-#                 func (s Student) getName() {
-#                     return 
-#                 }
-#                 func main () {
-#                     var s = Student { name: "s.name" };
-#                     s.getName();
-#                 }
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,482))
-#     def test_483(self):
-#         input = """     
-#                 type Student struct {
-#                     name string
-#                     age [3] int
-#                 }
-#                 func (s Student) getName() {
-#                     return 
-#                 }
-#                 func main () {
-#                     var s = Student { name: "s.name" };
-#                     s.getName();
-#                 }
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,483))
-#     def test_484(self):
-#         input = """     
-#                 type Student struct {
-#                     name string
-#                     age [3] int
-#                 }
-#                 func (s Student) getName() {
-#                     return 
-#                 }
-#                 func create() [3] float {
-#                     var a [3] int;
-#                     return a
-#                 }
-#                 func main () {
-#                     var s = Student { name: "s.name" };
-#                     s.getName();
-#                 }
-#                 """
-#         expect = """Type Mismatch: Return(Id(a))\n"""
-#         self.assertTrue(TestChecker.test(input,expect,484))
-#     def test_485(self):
-#         input = """     
-#                 func create() [3] int {
-#                     var a [3] int;
-#                     return a
-#                 }
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,485))
-#     def test_486(self):
-#         input = """     
-#                 type Student struct {
-#                     name string
-#                     age [3] int
-#                 }
-#                 func (s Student) getName() {
-#                     return 
-#                 }
-#                 func create() [5] int {
-#                     var a [3] int;
-#                     return a
-#                 }
-#                 func main () {
-#                     var s = Student { name: "s.name" };
-#                     s.getName();
-#                 }
-#                 """
-#         expect = """Type Mismatch: Return(Id(a))\n"""
-#         self.assertTrue(TestChecker.test(input,expect,486))
-#     def test_487(self):
-#         input = """     
-#                 type Student struct {
-#                     name string
-#                     age [3] int
-#                 }
-#                 func (s Student) getName() {
-#                     return 
-#                 }
-#                 func create() [3][4][4][0] int {
-#                     var a [3][4][4][0] int;
-#                     return a
-#                 }
-#                 func main () {
-#                     var s = Student { name: "s.name" };
-#                     s.getName();
-#                 }
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,487))
-#     def test_488(self):
-#         input = """     
-#                 func create() [3] int {
-#                     const c = 3;
-#                     var a [c] int;
-#                     return a
-#                 }
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,488))
-#     def test_489(self):
-#         input = """     
-#                 func create() [3] int {
-#                     const c = 1+2;
-#                     var a [c] int;
-#                     return a
-#                 }
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,489))
-#     def test_490(self):
-#         input = """     
-#                 func create() [4] int {
-#                     const c = 1+2;
-#                     var a [c] int;
-#                     return a
-#                 }
-#                 """
-#         expect = """Type Mismatch: Return(Id(a))\n"""
-#         self.assertTrue(TestChecker.test(input,expect,490))
-#     def test_491(self):
-#         input = """     
-#                 type Student struct {
-#                     name string
-#                     ages [3] int
-#                 }
-#                 func (s Student) age(a [3] int) [3] int {
-#                     return s.ages                
-#                 }
-#                 func main () {
-#                     var a = Student { name:"abc" }
-#                     var z [3] int;
-#                     var b = a.age(z);
+                }
+                """
+        expect = """Type Mismatch: FuncCall(getInt,[])\n"""
+        self.assertTrue(TestChecker.test(input,expect,477))
+    def test_478(self):
+        input = """     
+                var a = putInt(1);
+                """
+        expect = """Type Mismatch: VarDecl(a,FuncCall(putInt,[IntLiteral(1)]))\n"""
+        self.assertTrue(TestChecker.test(input,expect,478))
+    def test_479(self):
+        input = """     
+                func main () {
+                    putInt(1);
+                    putIntLn(2);
+                    putFloat(3.0);
+                    putFloatLn(4.0);
+                    putBool(true);
+                    putBoolLn(false);
+                    putString("abc");
+                    putStringLn("def");
+                    putLn();
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,479))
+    def test_480(self):
+        input = """     
+                func main () {
+                    putInt(1);
+                    putIntLn(2);
+                    putFloat(3.0);
+                    putFloatLn(4.0);
+                    putBool(true);
+                    putBoolLn(false);
+                    putString("abc");
+                    putStringLn("def");
+                    putLn();
+                    getInt();
+                }
+                """
+        expect = """Type Mismatch: FuncCall(getInt,[])\n"""
+        self.assertTrue(TestChecker.test(input,expect,480))
+    def test_481(self):
+        input = """     
+                type Student struct {
+                    name string
+                    age int
+                }
+                func (s Student) getName() string {
+                    return s.name
+                }
+                func main () {
+                    var s = Student { name: "s.name" };
+                    s.getName();
+                }
+                """
+        expect = """Type Mismatch: MethodCall(Id(s),getName,[])\n"""
+        self.assertTrue(TestChecker.test(input,expect,481))
+    def test_482(self):
+        input = """     
+                type Student struct {
+                    name string
+                    age int
+                }
+                func (s Student) getName() {
+                    return 
+                }
+                func main () {
+                    var s = Student { name: "s.name" };
+                    s.getName();
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,482))
+    def test_483(self):
+        input = """     
+                type Student struct {
+                    name string
+                    age [3] int
+                }
+                func (s Student) getName() {
+                    return 
+                }
+                func main () {
+                    var s = Student { name: "s.name" };
+                    s.getName();
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,483))
+    def test_484(self):
+        input = """     
+                type Student struct {
+                    name string
+                    age [3] int
+                }
+                func (s Student) getName() {
+                    return 
+                }
+                func create() [3] float {
+                    var a [3] int;
+                    return a
+                }
+                func main () {
+                    var s = Student { name: "s.name" };
+                    s.getName();
+                }
+                """
+        expect = """Type Mismatch: Return(Id(a))\n"""
+        self.assertTrue(TestChecker.test(input,expect,484))
+    def test_485(self):
+        input = """     
+                func create() [3] int {
+                    var a [3] int;
+                    return a
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,485))
+    def test_486(self):
+        input = """     
+                type Student struct {
+                    name string
+                    age [3] int
+                }
+                func (s Student) getName() {
+                    return 
+                }
+                func create() [5] int {
+                    var a [3] int;
+                    return a
+                }
+                func main () {
+                    var s = Student { name: "s.name" };
+                    s.getName();
+                }
+                """
+        expect = """Type Mismatch: Return(Id(a))\n"""
+        self.assertTrue(TestChecker.test(input,expect,486))
+    def test_487(self):
+        input = """     
+                type Student struct {
+                    name string
+                    age [3] int
+                }
+                func (s Student) getName() {
+                    return 
+                }
+                func create() [3][4][4][0] int {
+                    var a [3][4][4][0] int;
+                    return a
+                }
+                func main () {
+                    var s = Student { name: "s.name" };
+                    s.getName();
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,487))
+    def test_488(self):
+        input = """     
+                func create() [3] int {
+                    const c = 3;
+                    var a [c] int;
+                    return a
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,488))
+    def test_489(self):
+        input = """     
+                func create() [3] int {
+                    const c = 1+2;
+                    var a [c] int;
+                    return a
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,489))
+    def test_490(self):
+        input = """     
+                func create() [4] int {
+                    const c = 1+2;
+                    var a [c] int;
+                    return a
+                }
+                """
+        expect = """Type Mismatch: Return(Id(a))\n"""
+        self.assertTrue(TestChecker.test(input,expect,490))
+    def test_491(self):
+        input = """     
+                type Student struct {
+                    name string
+                    ages [3] int
+                }
+                func (s Student) age(a [3] int) [3] int {
+                    return s.ages                
+                }
+                func main () {
+                    var a = Student { name:"abc" }
+                    var z [3] int;
+                    var b = a.age(z);
                 
-#                 }
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,491))
-#     def test_492(self):
-#         input = """     
-#                 type Student struct {
-#                     name string
-#                     ages [3] int
-#                 }
-#                 func (s Student) age(a [4] int) [3] int {
-#                     return s.ages               
-#                 }
-#                 func main () {
-#                     var a = Student { name:"abc" }
-#                     var z [3] int;
-#                     var b = a.age(z);
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,491))
+    def test_492(self):
+        input = """     
+                type Student struct {
+                    name string
+                    ages [3] int
+                }
+                func (s Student) age(a [4] int) [3] int {
+                    return s.ages               
+                }
+                func main () {
+                    var a = Student { name:"abc" }
+                    var z [3] int;
+                    var b = a.age(z);
                 
-#                 }
-#                 """
-#         expect = """Type Mismatch: MethodCall(Id(a),age,[Id(z)])\n"""
-#         self.assertTrue(TestChecker.test(input,expect,492))
-#     # def test_492(self):
-#     #     input = """     
-#     #             type Student struct {
-#     #                 name string
-#     #                 age [3] int
-#     #             }
-#     #             const c = 5;
-#     #             func (s Student) age(a [c] int) [3] int {
-#     #                 return s.age                
-#     #             }
-#     #             func main () {
-#     #                 var a = Student { name:"abc" }
-#     #                 var z [c] int;
-#     #                 var b = a.age(z);
+                }
+                """
+        expect = """Type Mismatch: MethodCall(Id(a),age,[Id(z)])\n"""
+        self.assertTrue(TestChecker.test(input,expect,492))
+    def test_493(self):
+        input = """     
+                type Student struct {
+                    name string
+                    age [3] int
+                }
+                const c = 3;
+                func (s Student) age(a [c] int) [c] int {
+                    return s.age                
+                }
+                func main () {
+                    var a = Student { name:"abc" }
+                    var z [c] int;
+                    var b = a.age(z);
                 
-#     #             }
-#     #             """
-#     #     expect = """"""
-#     #     self.assertTrue(TestChecker.test(input,expect,492))
-#     def test_493(self):
-#         input = """     
-#                 type Student struct {
-#                     name string
-#                     age [3] int
-#                 }
-#                 const c = 5;
-#                 func (s Student) age(a [c] int) [c] int {
-#                     return s.age                
-#                 }
-#                 func main () {
-#                     var a = Student { name:"abc" }
-#                     var z [c] int;
-#                     var b = a.age(z);
-                
-#                 }
-#                 """
-#         expect = """Redeclared Method: age\n"""
-#         self.assertTrue(TestChecker.test(input,expect,493))
-#     def test_494(self):
-#         input = """     
-#                 type Student struct {
-#                     name string
-#                     ages [5] int
-#                 }
-#                 const c = 5;
-#                 func (s Student) age() [c] int {
-#                     return s.ages                
-#                 }
-#                 var name = "Name"
-#                 func main () {
-#                     var a = Student { name:name }
-#                     var z [c] int = a.age();
-#                 }
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,494))
-#     def test_495(self):
-#         input = """     
-#                 const c = 5;
+                }
+                """
+        expect = """Redeclared Method: age\n"""
+        self.assertTrue(TestChecker.test(input,expect,493))
+    def test_494(self):
+        input = """     
+                type Student struct {
+                    name string
+                    ages [5] int
+                }
+                const c = 5;
+                func (s Student) age() [c] int {
+                    return s.ages                
+                }
+                var name = "Name"
+                func main () {
+                    var a = Student { name:name }
+                    var z [c] int = a.age();
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,494))
+    def test_495(self):
+        input = """     
+                const c = 5;
 
-#                 type Student struct {
-#                     name string
-#                     age [c] int
-#                 }
-#                 func (s Student) ages() [c] int {
-#                     return s.age                
-#                 }
-#                 func create () Student {
-#                     return Student { name:"abc" }
-#                 }
-#                func main () {
-#                     var a int ;
-#                     var b float;
-#                     var t string;
-#                     var d boolean;
-#                     var e Student ;
-#                     var z [c] int;
+                type Student struct {
+                    name string
+                    age [c] int
+                }
+                func (s Student) ages() [c] int {
+                    return s.age                
+                }
+                func create () Student {
+                    return Student { name:"abc" }
+                }
+               func main () {
+                    var a int ;
+                    var b float;
+                    var t string;
+                    var d boolean;
+                    var e Student ;
+                    var z [c] int;
                     
-#                     a := 1;
-#                     b +=2;
-#                     t += "abc";
-#                     d := !true;
-#                     e := create();
-#                     e := Student { name:"abc" };
-#                     z := e.ages();
+                    a := 1;
+                    b +=2;
+                    t += "abc";
+                    d := !true;
+                    e := create();
+                    e := Student { name:"abc" };
+                    z := e.ages();
 
-#                 }
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,495))
-#     def test_496(self):
-#         input = """     
-#                 type Student struct {
-#                     name string
-#                     ages [5] int
-#                 }
-#                 const c = 5;
-#                 func (s Student) age() [c] int {
-#                     return s.ages                
-#                 }
-#                 var name = "Name"
-#                 func main () {
-#                     var a = Student { name:name }
-#                     var z [c] int = a.age();
-#                 }
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,496))
-#     def test_497(self):
-#         input = """
-#                 var a = [3][4] boolean { {true,false,true},{false,true,false},{true,false,true}}
-#                 var b = [3][4] float { {1.1,2.2,3.34},{4.4,5.5,6.6},{7.7,8.8,9.9}}
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,495))
+    def test_496(self):
+        input = """     
+                type Student struct {
+                    name string
+                    ages [5] int
+                }
+                const c = 5;
+                func (s Student) age() [c] int {
+                    return s.ages                
+                }
+                var name = "Name"
+                func main () {
+                    var a = Student { name:name }
+                    var z [c] int = a.age();
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,496))
+    def test_497(self):
+        input = """
+                var a = [3][4] boolean { {true,false,true},{false,true,false},{true,false,true}}
+                var b = [3][4] float { {1.1,2.2,3.34},{4.4,5.5,6.6},{7.7,8.8,9.9}}
             
-#                     """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,497))
-#     def test_498(self):
-#         input = """
-#                 var a [3] int = [3] int {1,2,3}
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,498))
-#     def test_499(self):
-#         input = """
-#                 var a [3] int = [3] int {1,2.2,3}
-#                 """
-#         expect = """Type Mismatch: ArrayLiteral([IntLiteral(3)],IntType,[IntLiteral(1),FloatLiteral(2.2),IntLiteral(3)])\n"""
-#         self.assertTrue(TestChecker.test(input,expect,499))
-#     def test_500(self):
-#         input = """
-#                 var c =  6/2 + 3 - 1*2;
-#                 var a [4] int = [c] int {1,c,3}
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,500))
-#     def test_501(self):
-#         input = """
-#                 var c =  6/2 + 3 - 1*2;
-#                 var a [5] int = [c] int {1,c,3}
-#                 """
-#         expect = """Type Mismatch: VarDecl(a,ArrayType(IntType,[IntLiteral(5)]),ArrayLiteral([Id(c)],IntType,[IntLiteral(1),Id(c),IntLiteral(3)]))\n"""
-#         self.assertTrue(TestChecker.test(input,expect,501))
-#     def test_502(self):
-#         input = """
-#                 var c =  6/2 + 3 - 1*2;
-#                 var a [4] float = [c] int {1,c,3}
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,502))
-#     def test_503(self):
-#         input = """
-#                 var c =  6/2 + 3 - 1*2;
-#                 var a [4][3] float = [c] [2] int { {1,c,3},{1,c,3}}
-#                 """
-#         expect = """Type Mismatch: VarDecl(a,ArrayType(FloatType,[IntLiteral(4),IntLiteral(3)]),ArrayLiteral([Id(c),IntLiteral(2)],IntType,[[IntLiteral(1),Id(c),IntLiteral(3)],[IntLiteral(1),Id(c),IntLiteral(3)]]))\n"""
-#         self.assertTrue(TestChecker.test(input,expect,503))
-#     def test_504(self):
-#         input = """
-#                 type Student struct {
-#                     name string
-#                     age [3] int
-#                 }
-#                 var c =  6/2 + 3 - 1*2;
-#                 var a [4] Student = [c] Student { Student { name:"abc" }, Student { name:"abc" } }
-#                 """
-#         expect = """"""
-#         self.assertTrue(TestChecker.test(input,expect,504))
-#     def test_505(self):
-#         input = """
-#                 type Person interface {
-#                     getName() string
-#                     getAge() [3]int
-#                 }
-#                 type Student struct {
-#                     name string
-#                     age [3] int
-#                 }
-#                 func (s Student) getName() string {
-#                     return s.name
-#                 }
-#                 func (s Student) getAge() [3]int {
-#                     return s.age
-#                 }
-#                 var c =  6/2 + 3 - 1*2;
-#                 var a [4] Person = [c] Student { Student { name:"abc" }, Student { name:"abc" } }
-#                 """
-#         expect = """Type Mismatch: VarDecl(a,ArrayType(Id(Person),[IntLiteral(4)]),ArrayLiteral([Id(c)],Id(Student),[StructLiteral(Student,[(name,StringLiteral("abc"))]),StructLiteral(Student,[(name,StringLiteral("abc"))])]))\n"""
-#         self.assertTrue(TestChecker.test(input,expect,505))
-#     def test_506(self):
-#         input = """
-#                 type Person interface {
-#                     getName() string
-#                     getAge() [3]int
-#                 }
-#                 type Car struct {
-#                     name string
-#                 }
-#                 type Student struct {
-#                     name string
-#                     age [3] int
-#                 }
-#                 func (s Student) getName() string {
-#                     return s.name
-#                 }
-#                 func (s Student) getAge() [3]int {
-#                     return s.age
-#                 }
-#                 var c =  6/2 + 3 - 1*2;
-#                 var a [4] Car = [c] Student { Student { name:"abc" }, Student { name:"abc" } }
-#                 """
-#         expect = """Type Mismatch: VarDecl(a,ArrayType(Id(Car),[IntLiteral(4)]),ArrayLiteral([Id(c)],Id(Student),[StructLiteral(Student,[(name,StringLiteral("abc"))]),StructLiteral(Student,[(name,StringLiteral("abc"))])]))\n"""
-#         self.assertTrue(TestChecker.test(input,expect,506))
-#     def test_507(self):
-#         input = """
-#                 type Student struct {
-#                     name string
-#                     age int
-#                 }
-#                 func (s Student) getName() string {
-#                     return s.name
-#                 }
-#                 func (s Student) getAge() int {
-#                     return s.age
-#                 }        
-#                 var b = Student { name:"abc", age:3 }
-#                 var c =  6/2 + 3 - 1*2;
-#                 var a [4] Student = [c] Student { b, Student { name:"abc" } }
-#                 """ 
-#         expect =  """"""
-#         self.assertTrue(TestChecker.test(input,expect,507))
-#     def test_508(self):
-#         input = """
-#                 type Student struct {
-#                     name string
-#                     age int
-#                 }
-#                 func (s Student) getName() string {
-#                     return s.name
-#                 }
-#                 type Car struct {
-#                     name string
-#                     age int
-#                 }
-#                 func (s Student) getAge() int {
-#                     return s.age
-#                 }        
-#                 var b = Car { name:"abc", age:3 }
-#                 var c =  6/2 + 3 - 1*2;
-#                 var a [4] Student = [c] Student { b, Student { name:"abc" } }
-#                 """ 
-#         expect =  """Type Mismatch: ArrayLiteral([Id(c)],Id(Student),[Id(b),StructLiteral(Student,[(name,StringLiteral("abc"))])])\n"""
-#         self.assertTrue(TestChecker.test(input,expect,508))
-#     def test_509(self):
-#         input = """
-#                 func main () {
-#                     for (true) {
-#                         return
-#                     }
-#                 }
-#                 """ 
-#         expect =  """"""
-#         self.assertTrue(TestChecker.test(input,expect,509))
+                    """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,497))
+    def test_498(self):
+        input = """
+                var a [3] int = [3] int {1,2,3}
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,498))
+    def test_499(self):
+        input = """
+                var a [3] int = [3] int {1,2.2,3}
+                """
+        expect = """Type Mismatch: ArrayLiteral([IntLiteral(3)],IntType,[IntLiteral(1),FloatLiteral(2.2),IntLiteral(3)])\n"""
+        self.assertTrue(TestChecker.test(input,expect,499))
+    def test_500(self):
+        input = """
+                var c =  6/2 + 3 - 1*2;
+                var a [4] int = [c] int {1,c,3}
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,500))
+    def test_501(self):
+        input = """
+                var c =  6/2 + 3 - 1*2;
+                var a [5] int = [c] int {1,c,3}
+                """
+        expect = """Type Mismatch: VarDecl(a,ArrayType(IntType,[IntLiteral(5)]),ArrayLiteral([Id(c)],IntType,[IntLiteral(1),Id(c),IntLiteral(3)]))\n"""
+        self.assertTrue(TestChecker.test(input,expect,501))
+    def test_502(self):
+        input = """
+                var c =  6/2 + 3 - 1*2;
+                var a [4] float = [c] int {1,c,3}
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,502))
+    def test_503(self):
+        input = """
+                var c =  6/2 + 3 - 1*2;
+                var a [4][3] float = [c] [2] int { {1,c,3},{1,c,3}}
+                """
+        expect = """Type Mismatch: VarDecl(a,ArrayType(FloatType,[IntLiteral(4),IntLiteral(3)]),ArrayLiteral([Id(c),IntLiteral(2)],IntType,[[IntLiteral(1),Id(c),IntLiteral(3)],[IntLiteral(1),Id(c),IntLiteral(3)]]))\n"""
+        self.assertTrue(TestChecker.test(input,expect,503))
+    def test_504(self):
+        input = """
+                type Student struct {
+                    name string
+                    age [3] int
+                }
+                var c =  6/2 + 3 - 1*2;
+                var a [4] Student = [c] Student { Student { name:"abc" }, Student { name:"abc" } }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,504))
+    def test_505(self):
+        input = """
+                type Person interface {
+                    getName() string
+                    getAge() [3]int
+                }
+                type Student struct {
+                    name string
+                    age [3] int
+                }
+                func (s Student) getName() string {
+                    return s.name
+                }
+                func (s Student) getAge() [3]int {
+                    return s.age
+                }
+                var c =  6/2 + 3 - 1*2;
+                var a [4] Person = [c] Student { Student { name:"abc" }, Student { name:"abc" } }
+                """
+        expect = """Type Mismatch: VarDecl(a,ArrayType(Id(Person),[IntLiteral(4)]),ArrayLiteral([Id(c)],Id(Student),[StructLiteral(Student,[(name,StringLiteral("abc"))]),StructLiteral(Student,[(name,StringLiteral("abc"))])]))\n"""
+        self.assertTrue(TestChecker.test(input,expect,505))
+    def test_506(self):
+        input = """
+                type Person interface {
+                    getName() string
+                    getAge() [3]int
+                }
+                type Car struct {
+                    name string
+                }
+                type Student struct {
+                    name string
+                    age [3] int
+                }
+                func (s Student) getName() string {
+                    return s.name
+                }
+                func (s Student) getAge() [3]int {
+                    return s.age
+                }
+                var c =  6/2 + 3 - 1*2;
+                var a [4] Car = [c] Student { Student { name:"abc" }, Student { name:"abc" } }
+                """
+        expect = """Type Mismatch: VarDecl(a,ArrayType(Id(Car),[IntLiteral(4)]),ArrayLiteral([Id(c)],Id(Student),[StructLiteral(Student,[(name,StringLiteral("abc"))]),StructLiteral(Student,[(name,StringLiteral("abc"))])]))\n"""
+        self.assertTrue(TestChecker.test(input,expect,506))
+    def test_507(self):
+        input = """
+                type Student struct {
+                    name string
+                    age int
+                }
+                func (s Student) getName() string {
+                    return s.name
+                }
+                func (s Student) getAge() int {
+                    return s.age
+                }        
+                var b = Student { name:"abc", age:3 }
+                var c =  6/2 + 3 - 1*2;
+                var a [4] Student = [c] Student { b, Student { name:"abc" } }
+                """ 
+        expect =  """"""
+        self.assertTrue(TestChecker.test(input,expect,507))
+    def test_508(self):
+        input = """
+                type Student struct {
+                    name string
+                    age int
+                }
+                func (s Student) getName() string {
+                    return s.name
+                }
+                type Car struct {
+                    name string
+                    age int
+                }
+                func (s Student) getAge() int {
+                    return s.age
+                }        
+                var b = Car { name:"abc", age:3 }
+                var c =  6/2 + 3 - 1*2;
+                var a [4] Student = [c] Student { b, Student { name:"abc" } }
+                """ 
+        expect =  """Type Mismatch: ArrayLiteral([Id(c)],Id(Student),[Id(b),StructLiteral(Student,[(name,StringLiteral("abc"))])])\n"""
+        self.assertTrue(TestChecker.test(input,expect,508))
+    def test_509(self):
+        input = """
+                func main () {
+                    for (true) {
+                        return
+                    }
+                }
+                """ 
+        expect =  """"""
+        self.assertTrue(TestChecker.test(input,expect,509))
     def test_510(self):
         input = """
                 func main () {
@@ -1912,280 +1890,280 @@ class CheckSuite(unittest.TestCase):
                 """ 
         expect =  """"""
         self.assertTrue(TestChecker.test(input,expect,514))
-# #     def test_515(self):
-# #         input = """
-# #                 func main () {
-# #                     var a boolean
-# #                     var b = 5;
-# #                     var c = 5;
-# #                     for i,_ := range [3] int { 1, 2 } {
-# #                         for var i = 0; i < 3; i+=1 {
-# #                             var c string
-# #                             continue
-# #                         }
-# #                     }
+    def test_515(self):
+        input = """
+                func main () {
+                    var a boolean
+                    var b = 5;
+                    var c = 5;
+                    for i,_ := range [3] int { 1, 2 } {
+                        for var i = 0; i < 3; i+=1 {
+                            var c string
+                            continue
+                        }
+                    }
 
-# #                 }
-# #                 """ 
-# #         expect =  """"""
-# #         self.assertTrue(TestChecker.test(input,expect,515))
-#     def test_516(self):
-#         input = """
-#                 func main () {
-#                     var a boolean
-#                     var b = 5;
-#                     var c = 5;
-#                     for i, value := range a {
-#                         return
-#                     }
+                }
+                """ 
+        expect =  """"""
+        self.assertTrue(TestChecker.test(input,expect,515))
+    def test_516(self):
+        input = """
+                func main () {
+                    var a boolean
+                    var b = 5;
+                    var c = 5;
+                    for i, value := range a {
+                        return
+                    }
 
-#                 }
-#                 """ 
-#         expect =  """Type Mismatch: ForEach(Id(i),Id(value),Id(a),Block([Return()]))\n"""
-#         self.assertTrue(TestChecker.test(input,expect,516))
+                }
+                """ 
+        expect =  """Type Mismatch: ForEach(Id(i),Id(value),Id(a),Block([Return()]))\n"""
+        self.assertTrue(TestChecker.test(input,expect,516))
 
-#     def test_517(self):
-#         input = """
-#                 func main () {
-#                     var a boolean
-#                     var b = 5;
-#                     var c = 5;
-#                     var d [3] string = [3] string {"a", "b", "c"}
-#                     for i, value := range d {
-#                         if (i<3) {
-#                         return
-#                         }
-#                     }
+    def test_517(self):
+        input = """
+                func main () {
+                    var a boolean
+                    var b = 5;
+                    var c = 5;
+                    var d [3] string = [3] string {"a", "b", "c"}
+                    for i, value := range d {
+                        if (i<3) {
+                        return
+                        }
+                    }
 
-#                 }
-#                 """ 
-#         expect =  """"""
-#         self.assertTrue(TestChecker.test(input,expect,517))
-#     def test_518(self):
-#         input = """
-#                 func main () {
-#                     var a boolean
-#                     var b = 5;
-#                     var c = 5;
-#                     var d [3] string = [3] string {"a", "b", "c"}
-#                     for i, value := range d {
-#                         if (i<3) {
-#                         b += value
-#                         return
-#                         }
-#                     }
+                }
+                """ 
+        expect =  """"""
+        self.assertTrue(TestChecker.test(input,expect,517))
+    def test_518(self):
+        input = """
+                func main () {
+                    var a boolean
+                    var b = 5;
+                    var c = 5;
+                    var d [3] string = [3] string {"a", "b", "c"}
+                    for i, value := range d {
+                        if (i<3) {
+                        b += value
+                        return
+                        }
+                    }
 
-#                 }
-#                 """ 
-#         expect =  """Type Mismatch: BinaryOp(Id(b),+,Id(value))\n"""
-#         self.assertTrue(TestChecker.test(input,expect,518))
+                }
+                """ 
+        expect =  """Type Mismatch: BinaryOp(Id(b),+,Id(value))\n"""
+        self.assertTrue(TestChecker.test(input,expect,518))
 
-#     def test_519(self):
-#         input = """
-#                 func main () {
-#                     var a boolean
-#                     var b = 5;
-#                     var c = 5;
-#                     var d [3] int = [3] int { 1,2,3}
-#                     for i, value := range d {
-#                         if (i<3) {
-#                         b %= value
-#                         return
-#                         }
-#                     }
+    def test_519(self):
+        input = """
+                func main () {
+                    var a boolean
+                    var b = 5;
+                    var c = 5;
+                    var d [3] int = [3] int { 1,2,3}
+                    for i, value := range d {
+                        if (i<3) {
+                        b %= value
+                        return
+                        }
+                    }
 
-#                 }
-#                 """ 
-#         expect =  """"""
-#         self.assertTrue(TestChecker.test(input,expect,519))
+                }
+                """ 
+        expect =  """"""
+        self.assertTrue(TestChecker.test(input,expect,519))
 
-#     def test_520(self):
-#         input = """
-#                 func main () {
-#                     var a boolean
-#                     var b = 5;
-#                     var c = 5;
-#                     var d [3] int = [3] int { 1,2,3}
-#                     for _, value := range d {
-#                         var a = _;
-#                     }
+    def test_520(self):
+        input = """
+                func main () {
+                    var a boolean
+                    var b = 5;
+                    var c = 5;
+                    var d [3] int = [3] int { 1,2,3}
+                    for _, value := range d {
+                        var a = _;
+                    }
 
-#                 }
-#                 """ 
-#         expect =  """"""
-#         self.assertTrue(TestChecker.test(input,expect,520))
+                }
+                """ 
+        expect =  """"""
+        self.assertTrue(TestChecker.test(input,expect,520))
     
-#     def test_521(self):
-#         input = """
-#                 func main () {
-#                     var a boolean
-#                     var b = 5;
-#                     var c = 5;
-#                     var d [3] string = [3] string {"a", "b", "c"}
-#                     var i = 12;
-#                     for i, value := range d {
-#                         for i:= 0; c < 3; c+= 3 {
-#                             return
-#                         }
-#                     }
+    def test_521(self):
+        input = """
+                func main () {
+                    var a boolean
+                    var b = 5;
+                    var c = 5;
+                    var d [3] string = [3] string {"a", "b", "c"}
+                    var i = 12;
+                    for i, value := range d {
+                        for i:= 0; c < 3; c+= 3 {
+                            return
+                        }
+                    }
 
-#                 }
-#                 """ 
-#         expect =  """"""
-#         self.assertTrue(TestChecker.test(input,expect,521))
+                }
+                """ 
+        expect =  """"""
+        self.assertTrue(TestChecker.test(input,expect,521))
     
-#     def test_522(self):
-#         input = """
-#                 func main () {
-#                     var a boolean
-#                     var b = 5;
-#                     var c = 5;
-#                     var d [3] string = [3] string {"a", "b", "c"}
-#                     var i = 12;
-#                     for var i= 0; i < 3; i+= 3 {
-#                             return
-#                     }
-#                 }
-#                 """ 
-#         expect =  """"""
-#         self.assertTrue(TestChecker.test(input,expect,522))
-#     def test_523(self):
-#         input = """
-#                 func main () {
-#                     var a boolean
-#                     var b = 5;
-#                     var c = 5;
-#                     var d [3] string = [3] string {"a", "b", "c"}
-#                     var i = 12;
-#                     var z = d[0]
-#                 }
-#                 """ 
-#         expect =  """"""
-#         self.assertTrue(TestChecker.test(input,expect,523))
-#     def test_524(self):
-#         input = """
-#                 type Student struct {
-#                     name string
-#                     age [3] int
-#                 }
-#                 type Car struct {
-#                     name string
-#                     owner [5] Student
-#                 }
-#                 func main () {
-#                     var a = Car { name:"OK"}
-#                     var b int = a.owner[0].age[0]
-#                 }
-#                 """ 
-#         expect =  """"""
-#         self.assertTrue(TestChecker.test(input,expect,524))
-#     def test_525(self):
-#         input = """
-#                 type Student struct {
-#                     name string
-#                     age [3] float
-#                 }
-#                 type Car struct {
-#                     name string
-#                     owner [5] Student
-#                 }
-#                 func main () {
-#                     var a = Car { name:"OK"}
-#                     var b int = a.owner[0].age[0]
-#                 }
-#                 """ 
-#         expect =  """Type Mismatch: VarDecl(b,IntType,ArrayCell(FieldAccess(ArrayCell(FieldAccess(Id(a),owner),[IntLiteral(0)]),age),[IntLiteral(0)]))\n"""
-#         self.assertTrue(TestChecker.test(input,expect,525))
-#     def test_526(self):
-#         input = """
-#                 type Student struct {
-#                     name string
-#                     age [3] float
-#                 }
-#                 type Car struct {
-#                     name string
-#                     owner [5] Student
-#                 }
-#                 func main () {
-#                     var a = Car { name:"OK"}
-#                     var b [3][4] int;
-#                     var c [4]  int = b[0]
-#                 }
-#                 """ 
-#         expect =  """"""
-#         self.assertTrue(TestChecker.test(input,expect,526))
-#     def test_527(self):
-#         input = """
-#                 type Student struct {
-#                     name string
-#                     age [3] float
-#                 }
-#                 func main () {
-#                     var a = Car { name:"OK"}
-#                     var b [3][4] int;
-#                     var c [4]  int = b[0]
-#                 }
-#                 type Car struct {
-#                     name string
-#                     owner [5] Student
-#                 }
-#                 """ 
-#         expect =  """"""
-#         self.assertTrue(TestChecker.test(input,expect,527))
+    def test_522(self):
+        input = """
+                func main () {
+                    var a boolean
+                    var b = 5;
+                    var c = 5;
+                    var d [3] string = [3] string {"a", "b", "c"}
+                    var i = 12;
+                    for var i= 0; i < 3; i+= 3 {
+                            return
+                    }
+                }
+                """ 
+        expect =  """"""
+        self.assertTrue(TestChecker.test(input,expect,522))
+    def test_523(self):
+        input = """
+                func main () {
+                    var a boolean
+                    var b = 5;
+                    var c = 5;
+                    var d [3] string = [3] string {"a", "b", "c"}
+                    var i = 12;
+                    var z = d[0]
+                }
+                """ 
+        expect =  """"""
+        self.assertTrue(TestChecker.test(input,expect,523))
+    def test_524(self):
+        input = """
+                type Student struct {
+                    name string
+                    age [3] int
+                }
+                type Car struct {
+                    name string
+                    owner [5] Student
+                }
+                func main () {
+                    var a = Car { name:"OK"}
+                    var b int = a.owner[0].age[0]
+                }
+                """ 
+        expect =  """"""
+        self.assertTrue(TestChecker.test(input,expect,524))
+    def test_525(self):
+        input = """
+                type Student struct {
+                    name string
+                    age [3] float
+                }
+                type Car struct {
+                    name string
+                    owner [5] Student
+                }
+                func main () {
+                    var a = Car { name:"OK"}
+                    var b int = a.owner[0].age[0]
+                }
+                """ 
+        expect =  """Type Mismatch: VarDecl(b,IntType,ArrayCell(FieldAccess(ArrayCell(FieldAccess(Id(a),owner),[IntLiteral(0)]),age),[IntLiteral(0)]))\n"""
+        self.assertTrue(TestChecker.test(input,expect,525))
+    def test_526(self):
+        input = """
+                type Student struct {
+                    name string
+                    age [3] float
+                }
+                type Car struct {
+                    name string
+                    owner [5] Student
+                }
+                func main () {
+                    var a = Car { name:"OK"}
+                    var b [3][4] int;
+                    var c [4]  int = b[0]
+                }
+                """ 
+        expect =  """"""
+        self.assertTrue(TestChecker.test(input,expect,526))
+    # def test_527(self):
+    #     input = """
+    #             type Student struct {
+    #                 name string
+    #                 age [3] float
+    #             }
+    #             func main () {
+    #                 var a = Car { name:"OK"}
+    #                 var b [3][4] int;
+    #                 var c [4]  int = b[0]
+    #             }
+    #             type Car struct {
+    #                 name string
+    #                 owner [5] Student
+    #             }
+    #             """ 
+    #     expect =  """"""
+    #     self.assertTrue(TestChecker.test(input,expect,527))
 
-#     def test_528(self):
-#         input = """
-#                 type Student struct {
-#                     name string
-#                     age [3] float
-#                 }
-#                 func main () {
-#                     var a = Car { name:"OK"}
-#                     var b [3][4] int;
-#                     var c [4]  int = b[0]
-#                 }
+    # def test_528(self):
+    #     input = """
+    #             type Student struct {
+    #                 name string
+    #                 age [3] float
+    #             }
+    #             func main () {
+    #                 var a = Car { name:"OK"}
+    #                 var b [3][4] int;
+    #                 var c [4]  int = b[0]
+    #             }
 
-#                 func (c Car) getOwner() [5] Student {
-#                     return c.owner
-#                 }
-#                 type Car struct {
-#                     name string
-#                     owner [5] Student
-#                 }
-#                 """ 
-#         expect =  """"""
-#         self.assertTrue(TestChecker.test(input,expect,528))
-#     def test_529(self):
-#         input = """
-#                 type Student struct {
-#                     name string
-#                     age [3] float
-#                 }
-#                 func main () {
-#                     var a = Student { name:"OK"}
-#                     var b Person = a
-#                 }
+    #             func (c Car) getOwner() [5] Student {
+    #                 return c.owner
+    #             }
+    #             type Car struct {
+    #                 name string
+    #                 owner [5] Student
+    #             }
+    #             """ 
+    #     expect =  """"""
+    #     self.assertTrue(TestChecker.test(input,expect,528))
+    # def test_529(self):
+    #     input = """
+    #             type Student struct {
+    #                 name string
+    #                 age [3] float
+    #             }
+    #             func main () {
+    #                 var a = Student { name:"OK"}
+    #                 var b Person = a
+    #             }
 
-#                 func (c Car) getOwner() [5] Student {
-#                     return c.owner
-#                 }
-#                 type Car struct {
-#                     name string
-#                     owner [5] Student
-#                 }
-#                 type Person interface {
-#                     getName() string
-#                     getAge() [3]float
-#                 }
-#                 func (p Student) getName() string {
-#                     return p.name
-#                 }
-#                 func (p Student) getAge() [3]float {
-#                     return p.age
-#                 }
-#                 """ 
-#         expect =  """"""
-#         self.assertTrue(TestChecker.test(input,expect,529))
+    #             func (c Car) getOwner() [5] Student {
+    #                 return c.owner
+    #             }
+    #             type Car struct {
+    #                 name string
+    #                 owner [5] Student
+    #             }
+    #             type Person interface {
+    #                 getName() string
+    #                 getAge() [3]float
+    #             }
+    #             func (p Student) getName() string {
+    #                 return p.name
+    #             }
+    #             func (p Student) getAge() [3]float {
+    #                 return p.age
+    #             }
+    #             """ 
+    #     expect =  """"""
+    #     self.assertTrue(TestChecker.test(input,expect,529))
 #     def test_530(self):
 #         input = """
 #                 type Student struct {
@@ -2370,30 +2348,30 @@ class CheckSuite(unittest.TestCase):
 #         expect =  """"""
 #         self.assertTrue(TestChecker.test(input,expect,537))
 #         # thêm test cho expr
-    def test_538(self):
-        input = """
-            func main () {
+    # def test_538(self):
+    #     input = """
+    #         func main () {
             
-            a:= 12; 
-            var b = a+5;
+    #         a:= 12; 
+    #         var b = a+5;
             
-            }
-        """
-        expect = """"""
-        self.assertTrue(TestChecker.test(input, expect, 538))
-    def test_539(self):
-        input = """
-            func main () {
+    #         }
+    #     """
+    #     expect = """"""
+    #     self.assertTrue(TestChecker.test(input, expect, 538))
+    # def test_539(self):
+    #     input = """
+    #         func main () {
             
-            a+= 12; 
-            var b = a+5;
+    #         a+= 12; 
+    #         var b = a+5;
             
-            }
+    #         }
            
 
-        """
-        expect = """Undeclared Identifier: a\n"""
-        self.assertTrue(TestChecker.test(input, expect, 539))
+    #     """
+    #     expect = """Undeclared Identifier: a\n"""
+    #     self.assertTrue(TestChecker.test(input, expect, 539))
 #     def test_540(self):
 #         input = """
 #             var z B = A { a:12}
@@ -2757,32 +2735,27 @@ class CheckSuite(unittest.TestCase):
 #             """
 #         expect = """"""
 #         self.assertTrue(TestChecker.test(input, expect, 555))
-#     def test_556(self):
-#         input = """
-#                 type Item struct {
-#                     items [3][4] string
-#                 }
-#                 type Student struct {
-#                     name string
-#                     age [3] float
-#                     items [3] Item
-#                 }
-#                 type People interface {
-#                     getName() string
-#                 }
-#                 func (s Student) getName() string {
-#                     return s.name
-#                 }
-#                 func main() { 
-#                     var a People
-#                     var b string = a.getName()
-#                     var z = 3.2
-#                     var c [z] int
-#                 }
+    # def test_556(self):
+    #     input = """
+                
+    #             type Student struct {
+    #                 name string
+    #             }
+    #             type People interface {
+    #                 getName() string
+    #             }
+    #             func (s Student) getName() string {
+    #                 return "s.name"
+    #             }
+    #             func main() { 
+    #                 var a People
+    #                 var b string = a.getName()
+    #                 var z = 3.2
+    #             }
             
-#             """
-#         expect = """Type Mismatch: VarDecl(c,ArrayType(IntType,[Id(z)]))\n"""
-#         self.assertTrue(TestChecker.test(input, expect, 556))
+    #         """
+    #     expect = """"""
+    #     self.assertTrue(TestChecker.test(input, expect, 556))
 #     def test_557(self):
 #         input = """
 #                 type Item struct {
@@ -2848,30 +2821,30 @@ class CheckSuite(unittest.TestCase):
 #             """ 
 #         expect = """"""
 #         self.assertTrue(TestChecker.test(input, expect, 558))
-#     def test_559(self):
-#         input = """
-#             type A struct  {
-#                 a int
-#             }
-#             var a Z = A{a : 1}
-#             type B struct{
-#                 a int
-#             }
-#             func main(){
-#                 var a = A{a : 1}
-#                 var b = B{a : 2}
-#                 a.get();
-#                 return
-#             }
-#             func (a A) get() int {
-#                 return a.a
-#             }
-#             type Z interface {
-#                 get() int
-#             }
-#         """
-#         expect = """Type Mismatch: MethodCall(Id(a),get,[])\n"""
-#         self.assertTrue(TestChecker.test(input, expect, 559))
+    # def test_559(self):
+    #     input = """
+    #         type A struct  {
+    #             a int
+    #         }
+    #         type B struct{
+    #             a int
+    #         }
+    #         type Z interface {
+    #             get() int
+    #         }
+    #         func (a A) get() int {
+    #             return a.a
+    #         }
+    #         func main(){
+    #             var a = A{a : 1}
+    #             var b = B{a : 2}
+    #             a.get();
+    #             return
+    #         }
+    #         var a Z = A{a : 1}
+    #     """
+    #     expect = """Type Mismatch: MethodCall(Id(a),get,[])\n"""
+    #     self.assertTrue(TestChecker.test(input, expect, 559))
 #     def test_560(self):
 #         input = """
 #             type a struct {
