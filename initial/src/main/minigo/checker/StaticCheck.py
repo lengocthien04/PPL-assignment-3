@@ -89,6 +89,7 @@ class StaticChecker(BaseVisitor,Utils):
         return self.CheckTypeBasic(aType, bType)
     
     def getType(self, tp, c):
+
         parType = tp
         if self.step == 0:
             return tp
@@ -106,7 +107,7 @@ class StaticChecker(BaseVisitor,Utils):
         if type(parType) is StructType or type(parType) is InterfaceType:
             return parType
         parType = self.visit(parType, c)
-        if type(parType) is Tuple:
+        if type(parType) is tuple:
             parType = parType[0]
         if isinstance(parType, tuple):
             parType = parType[0]
@@ -197,7 +198,7 @@ class StaticChecker(BaseVisitor,Utils):
         ]]
         self.step = 0
         for i in ast.decl:
-            if type(i) not in[VarDecl, ConstDecl, MethodDecl]:
+            if type(i) not in[MethodDecl]:
                 t = self.visit(i,t)
         for i in ast.decl:
             if type(i) in [InterfaceType,StructType]:
@@ -217,7 +218,11 @@ class StaticChecker(BaseVisitor,Utils):
         # var a = 12 (infertype a  = int)
         # var a float = 12 ( force type int to float)
         # var a string = 12 (type mismatch)
-
+        if self.step == 0 :
+            res = self.lookup(ast.varName, c[0], lambda x: x.name)
+            if res is not None:
+                raise Redeclared(Variable(), ast.varName)
+            return self.addToLocal(Symbol(ast.varName, None, None), c)
 
         res = self.lookup(ast.varName, c[0], lambda x: x.name)
         varType = None
@@ -231,7 +236,7 @@ class StaticChecker(BaseVisitor,Utils):
             varInitType, varInitValue = self.visit(ast.varInit, c)
 
             if type(varInitType) is VoidType:
-                raise TypeMismatch(ast)
+                raise TypeMismatch(ast.varInit)
             if varType is None: 
                 varType = self.getType(varInitType,c )
                 return [[Symbol(ast.varName, varType, varInitValue)] + c[0]] + c[1:]
@@ -240,6 +245,12 @@ class StaticChecker(BaseVisitor,Utils):
         return self.addToLocal(Symbol(ast.varName, varType, varInitValue), c)
 
     def visitConstDecl(self,ast: ConstDecl, c):
+        if self.step == 0:
+            res = self.lookup(ast.conName, c[0], lambda x: x.name)
+            if res is not None:
+                raise Redeclared(Constant(), ast.conName)
+            return self.addToLocal(Symbol(ast.conName, None, None), c)
+        
         res = self.lookup(ast.conName, c[0], lambda x: x.name)
         if res is not None: raise Redeclared(Constant(), ast.conName)
         constType, constValue = self.visit(ast.iniExpr, c)
@@ -305,6 +316,7 @@ class StaticChecker(BaseVisitor,Utils):
         return VoidType()
     
     def visitArrayType(self,ast: ArrayType, c):
+
         if self.step == 0:
             return ast
         dim = []
@@ -325,11 +337,14 @@ class StaticChecker(BaseVisitor,Utils):
             if res is not None:
                 raise Redeclared(Type(), ast.name)
         field = []
+
+
         for i in ast.elements:
             res = self.lookup(i[0], field, lambda x: x[0])
             if res is not None:
                 raise Redeclared(Field(), i[0])
-            fieldType = self.getType(i[1],c)
+            fieldType = self.getType(i[1], c)
+
             field.append([i[0], fieldType])
         method = []
         if self.step == 1:
@@ -365,6 +380,8 @@ class StaticChecker(BaseVisitor,Utils):
  
     def visitAssign(self,ast: Assign, c):
         rhsType, rhsValue= self.visit(ast.rhs, c)
+        if type(rhsType) is VoidType:
+            raise TypeMismatch(ast)
         try:
             lhsType, lhsValue = self.visit(ast.lhs,c)
         except:
@@ -412,7 +429,30 @@ class StaticChecker(BaseVisitor,Utils):
         arrType, arrValue = self.visit(ast.arr, c)
         if type(arrType) is not ArrayType:
             raise TypeMismatch(ast)
-        self.ForBlock = [Symbol(ast.idx.name, IntType(), None), Symbol(ast.value.name, self.getType(arrType.eleType, c), None)]
+        if ast.idx.name != '_':
+            res = None
+            for block in c:
+                res = self.lookup(ast.idx.name, block, lambda x: x.name)
+                if res is not None:
+                    if type(res.mtype) is not IntType:
+                        raise TypeMismatch(ast)
+                    break
+            if res is None:
+                raise Undeclared(Identifier(), ast.idx.name)
+        if ast.value.name != '_':
+
+            res = None
+            for block in c:
+                res = self.lookup(ast.value.name, block, lambda x: x.name)
+                if res is not None:
+                    if not self.CheckTypeBasic(res.mtype, arrType.eleType):
+                        raise TypeMismatch(ast)
+                    break
+            if res is None:
+                raise Undeclared(Identifier(), ast.value.name)
+            
+            
+            
         self.visit(ast.loop, c)
         return c
 
@@ -437,8 +477,11 @@ class StaticChecker(BaseVisitor,Utils):
     def visitBinaryOp(self,ast: BinaryOp, c):
         leftType, leftValue = self.visit(ast.left, c)
         rightType, rightValue = self.visit(ast.right, c)
-        if type(leftType) is VoidType or type(rightType) is VoidType:
-            raise TypeMismatch(ast)
+        if type(leftType) is VoidType:
+            raise TypeMismatch(ast.left)
+        if type(rightType) is VoidType:
+            raise TypeMismatch(ast.right)
+        
         if ast.op == '+':
             if type(leftType) is StringType and type(rightType) is StringType:
                 return StringType(), None
@@ -496,6 +539,8 @@ class StaticChecker(BaseVisitor,Utils):
     
     def visitUnaryOp(self,ast: UnaryOp, c):
         utype, uvalue = self.visit(ast.body, c)
+        if type(utype) is VoidType:
+            raise TypeMismatch(ast.body)
         if ast.op == '!':
             if type(utype) is not BoolType:
                 raise TypeMismatch(ast)
@@ -513,7 +558,7 @@ class StaticChecker(BaseVisitor,Utils):
             func = self.lookup(ast.funName, scope, lambda x: x.name)
             if func is not None and type(func.mtype) is not MType:
             # chua duoc confirm tren forum
-                raise TypeMismatch(ast)
+                raise Undeclared(Function(),ast.funName)
         if func is None:
             raise Undeclared(Function(), ast.funName)
         #khac so luong
@@ -614,6 +659,8 @@ class StaticChecker(BaseVisitor,Utils):
             struct = self.lookup(ast.name, block, lambda x: x.name)
             if struct is not None and type(struct.mtype) is not StructType:
                 raise TypeMismatch(ast)
+        if struct is None:
+            raise Undeclared(Type(), ast.name)
         for i in ast.elements:
             structType, structValue = self.visit(i[1], c)
             res = self.lookup(i[0], struct.mtype.elements, lambda x: x[0])

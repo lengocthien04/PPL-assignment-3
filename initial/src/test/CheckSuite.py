@@ -49,7 +49,6 @@ class CheckSuite(unittest.TestCase):
         input = """func a(b int, c float) int { var a float = 1 + 2.2+c;}; """
         expect = ""
         self.assertTrue(TestChecker.test(input,expect,410))
-
     def test_411(self):
         input = """var getInt int;"""
         expect = "Redeclared Variable: getInt\n"
@@ -104,8 +103,6 @@ class CheckSuite(unittest.TestCase):
         };"""
         expect = ""
         self.assertTrue(TestChecker.test(input,expect,418))
-
-
     def test_419(self):
         input = """func main (a int) { 
             var a int = 3;
@@ -226,7 +223,18 @@ class CheckSuite(unittest.TestCase):
                 """
         expect = ""
         self.assertTrue(TestChecker.test(input,expect,427))
-
+    def test_427(self):
+        input = """
+                 type A struct {
+                    a string
+                    b float
+                    c int
+                    d boolean
+                 }
+                 var a A;
+                """
+        expect = ""
+        self.assertTrue(TestChecker.test(input,expect,427))
     def test_428(self):
         input = """
                  type A struct {
@@ -332,7 +340,7 @@ class CheckSuite(unittest.TestCase):
                     d boolean
                  }
 
-                 var a A = A {a:"string",b: B { a: 3 },c: C { b: C { a: 30 }}};
+                 var a A = A {a:"string",b: B { a: 3 },c: C { b: C { a: 3 }}};
                 """
         expect = """Undeclared Field: a\n"""
         self.assertTrue(TestChecker.test(input,expect,434))
@@ -448,34 +456,34 @@ class CheckSuite(unittest.TestCase):
                 """
         expect = """Type Mismatch: VarDecl(a,IntType,Id(Test))\n"""
         self.assertTrue(TestChecker.test(input,expect,440))
-    # def test_441(self):
-    #     input = """
-    #             func Test() int {
-    #                 var a int = 3;
-    #                 return a;
-    #             }
-    #             var a int = Test();
-    #             """
-    #     expect = """"""
-    #     self.assertTrue(TestChecker.test(input,expect,441))
-    # def test_442(self):
-    #     input = """
-    #             func Test() int {
-    #                 var a int = 3;
-    #                 if (a <= 5) {
-    #                     var b int = 4;
-    #                     if (b <= 5) {
-    #                         return a;
-    #                     } else {
-    #                         return b;
-    #                     }
-    #                     return b;
-    #                 }
-    #                 return a;
-    #             }
-    #             """
-    #     expect = """"""
-    #     self.assertTrue(TestChecker.test(input,expect,442))
+    def test_441(self):
+        input = """
+                func Test() int {
+                    var a int = 3;
+                    return a;
+                }
+                var a int = Test();
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,441))
+    def test_442(self):
+        input = """
+                func Test() int {
+                    var a int = 3;
+                    if (a <= 5) {
+                        var b int = 4;
+                        if (b <= 5) {
+                            return a;
+                        } else {
+                            return b;
+                        }
+                        return b;
+                    }
+                    return a;
+                }
+                """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input,expect,442))
     def test_443(self):
         input = """
                 func Test() int {
@@ -721,7 +729,7 @@ class CheckSuite(unittest.TestCase):
                 var foo = 12;
                 var a int = foo();
                 """
-        expect = """Type Mismatch: FuncCall(foo,[])\n"""
+        expect = """Undeclared Function: foo\n"""
         self.assertTrue(TestChecker.test(input,expect,451))
     def test_452(self):
         input = """
@@ -857,6 +865,9 @@ class CheckSuite(unittest.TestCase):
                 """
         expect = """"""
         self.assertTrue(TestChecker.test(input,expect,461))
+
+
+
 
 
     def test_462(self):
@@ -1354,12 +1365,12 @@ class CheckSuite(unittest.TestCase):
                 """
         expect = """Type Mismatch: FuncCall(getInt,[])\n"""
         self.assertTrue(TestChecker.test(input,expect,477))
-    def test_478(self):
-        input = """     
-                var a = putInt(1);
-                """
-        expect = """Type Mismatch: VarDecl(a,FuncCall(putInt,[IntLiteral(1)]))\n"""
-        self.assertTrue(TestChecker.test(input,expect,478))
+    # def test_478(self):
+    #     input = """     
+    #             var a = putInt(1);
+    #             """
+    #     expect = """Type Mismatch: VarDecl(a,FuncCall(putInt,[IntLiteral(1)]))\n"""
+    #     self.assertTrue(TestChecker.test(input,expect,478))
     def test_479(self):
         input = """     
                 func main () {
@@ -1576,6 +1587,25 @@ class CheckSuite(unittest.TestCase):
                 """
         expect = """Type Mismatch: MethodCall(Id(a),age,[Id(z)])\n"""
         self.assertTrue(TestChecker.test(input,expect,492))
+    # def test_492(self):
+    #     input = """     
+    #             type Student struct {
+    #                 name string
+    #                 age [3] int
+    #             }
+    #             const c = 5;
+    #             func (s Student) age(a [c] int) [3] int {
+    #                 return s.age                
+    #             }
+    #             func main () {
+    #                 var a = Student { name:"abc" }
+    #                 var z [c] int;
+    #                 var b = a.age(z);
+                
+    #             }
+    #             """
+    #     expect = """"""
+    #     self.assertTrue(TestChecker.test(input,expect,492))
     def test_493(self):
         input = """     
                 type Student struct {
@@ -1905,7 +1935,7 @@ class CheckSuite(unittest.TestCase):
 
                 }
                 """ 
-        expect =  """"""
+        expect =  """Undeclared Identifier: i\n"""
         self.assertTrue(TestChecker.test(input,expect,515))
     def test_516(self):
         input = """
@@ -1913,6 +1943,8 @@ class CheckSuite(unittest.TestCase):
                     var a boolean
                     var b = 5;
                     var c = 5;
+                    var i int;
+                    var value int;
                     for i, value := range a {
                         return
                     }
@@ -1929,6 +1961,9 @@ class CheckSuite(unittest.TestCase):
                     var b = 5;
                     var c = 5;
                     var d [3] string = [3] string {"a", "b", "c"}
+                    var i = 0;
+
+                    var value = "a";
                     for i, value := range d {
                         if (i<3) {
                         return
@@ -1946,6 +1981,8 @@ class CheckSuite(unittest.TestCase):
                     var b = 5;
                     var c = 5;
                     var d [3] string = [3] string {"a", "b", "c"}
+                    var value = d[0];
+                    var i = 0;
                     for i, value := range d {
                         if (i<3) {
                         b += value
@@ -1965,6 +2002,8 @@ class CheckSuite(unittest.TestCase):
                     var b = 5;
                     var c = 5;
                     var d [3] int = [3] int { 1,2,3}
+                    var value = d[0];
+                    var i = 1;
                     for i, value := range d {
                         if (i<3) {
                         b %= value
@@ -1985,12 +2024,12 @@ class CheckSuite(unittest.TestCase):
                     var c = 5;
                     var d [3] int = [3] int { 1,2,3}
                     for _, value := range d {
-                        var a = _;
+                        return
                     }
 
                 }
                 """ 
-        expect =  """"""
+        expect =  """Undeclared Identifier: value\n"""
         self.assertTrue(TestChecker.test(input,expect,520))
     
     def test_521(self):
@@ -2001,6 +2040,7 @@ class CheckSuite(unittest.TestCase):
                     var c = 5;
                     var d [3] string = [3] string {"a", "b", "c"}
                     var i = 12;
+                    value := d[i];
                     for i, value := range d {
                         for i:= 0; c < 3; c+= 3 {
                             return
@@ -2494,15 +2534,12 @@ class CheckSuite(unittest.TestCase):
     def test_544(self):
         input = """
             func main() {
-                a := [1][1][1] int { {{1}}}
-                for i,v := range a {
-                    var i = i;
-                    for i:=1.2; i < 10; i+=1 {
+                a := [1] int {1 }
+                    for i:=1; i < 10; i+=1 {
                         var i int = 3;
                         var v = v;
                         return
                     }
-                }
                 return;
             };
             """
@@ -2692,6 +2729,8 @@ type A {}
         input = """
                 func main() { 
                     var a = 3.0
+                    var i int;
+                    var v int;
                     for i,v := range [a] int { 2,3,4} { 
                         return
                     }                
@@ -2737,20 +2776,25 @@ type A {}
         self.assertTrue(TestChecker.test(input, expect, 555))
     def test_556(self):
         input = """
-                
+                type Item struct {
+                    items [3][4] string
+                }
                 type Student struct {
                     name string
+                    age [3] float
+                    items [3] Item
                 }
                 type People interface {
                     getName() string
                 }
                 func (s Student) getName() string {
-                    return "s.name"
+                    return s.name
                 }
                 func main() { 
                     var a People
                     var b string = a.getName()
-                    var z = 3.2
+                    var z = 5
+                    var c [z] int
                 }
             
             """
@@ -2826,14 +2870,9 @@ type A {}
             type A struct  {
                 a int
             }
+            var a Z = A{a : 1}
             type B struct{
                 a int
-            }
-            type Z interface {
-                get() int
-            }
-            func (a A) get() int {
-                return a.a
             }
             func main(){
                 var a = A{a : 1}
@@ -2841,7 +2880,12 @@ type A {}
                 a.get();
                 return
             }
-            var a Z = A{a : 1}
+            func (a A) get() int {
+                return a.a
+            }
+            type Z interface {
+                get() int
+            }
         """
         expect = """Type Mismatch: MethodCall(Id(a),get,[])\n"""
         self.assertTrue(TestChecker.test(input, expect, 559))
@@ -3029,12 +3073,13 @@ type A {}
             putInt(a(1));
         }
         """
-        expect = "Type Mismatch: FuncCall(a,[IntLiteral(1)])\n"
+        expect = "Undeclared Function: a\n"
         self.assertTrue(TestChecker.test(input,expect,576))
     def test_577(self):
         input = """
         func main() {
         for var i= 0; i < 3; i+= 3 {
+            var v int;
             for i,v := range [3] int {1,2,3} {
                 for var i= 0; i < 3; i+= 3 {
                     continue;
@@ -3072,5 +3117,290 @@ type A {}
             return 
         }
         """
-        expect = """Redeclared Variable: main\n"""
+        expect = """Redeclared Function: main\n"""
         self.assertTrue(TestChecker.test(input, expect, 580))
+    # def test_581(self):
+    #     input = """
+    #     var a = A { a: [2] int { 1, 2 } };
+    #     const b  = 2;
+    #     type A struct {
+    #     a [b] int
+    #     }
+    #     """
+    #     expect = """"""
+    #     self.assertTrue(TestChecker.test(input, expect, 581))
+    # def test_582(self):
+    #     input = """
+    #     var a = A { a: [2] int { 1, 2 } };
+    #     const b  = 2;
+    #     type A struct {
+    #     a [b] int
+    #     }
+    #     func main() {
+    #     var i int;
+    #     var v int;
+    #     for i,v := range a.a {
+    #         const z = i;
+    #         //var k [z] int;
+    #     }
+    #     }
+    #     """
+    #     expect = """"""
+    #     self.assertTrue(TestChecker.test(input, expect, 582))
+    # def test_583(self):
+    #     input = """
+    #     var a main;
+    #     const b  = 2;
+    #     func main() {
+    #         return
+    #     }
+    #     """
+    #     expect = """Undeclared Type: main\n"""
+    #     self.assertTrue(TestChecker.test(input, expect, 583))
+    # def test_584(self):
+    #     input = """
+    #     var a int ;
+    #     func main() {
+    #       a:= 12;
+    #       var b [a] int = [12]  int { 1,2,3}      
+        
+    #     }
+    #     """
+    #     expect = """"""
+    #     self.assertTrue(TestChecker.test(input, expect, 584))
+    def test_585(self):
+        # var a A ; type A struct {...}; func main () {var A A; var b A;}  var b[a] = [12] 
+        pass
+    # def test_586(self):
+    #     input = """
+    #     var a = A { a: [5] int { 1, 2 } };
+    #     const b  = 2;
+    #     type A struct {
+    #     a [b] int
+    #     }
+    #     func main() {
+        
+    #     for i,v := range a.a {
+    #         const z = i;
+    #         //var k [z] int;
+    #     }
+    #     }
+    #     """
+    #     expect = """Type Mismatch: StructLiteral(A,[(a,ArrayLiteral([IntLiteral(5)],IntType,[IntLiteral(1),IntLiteral(2)]))])\n"""
+    #     self.assertTrue(TestChecker.test(input, expect, 586))
+    def test_587(self):
+        input = """
+
+        var a = 1 / 0;
+        """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input, expect, 587))
+        
+    def test_588(self):
+        input = """
+        func main() {
+        a:=putInt(1);
+        
+        }
+        """
+        expect = """Type Mismatch: Assign(Id(a),FuncCall(putInt,[IntLiteral(1)]))\n"""
+        self.assertTrue(TestChecker.test(input, expect, 588))
+    def test_589(self):
+        input = """
+        func main() {
+        var a = putInt(1);
+        
+        }
+        """
+        expect = """Type Mismatch: FuncCall(putInt,[IntLiteral(1)])\n"""
+        self.assertTrue(TestChecker.test(input, expect, 589))
+    def test_590(self):
+        input = """
+        func main() {
+        var a = 1+putInt(1);
+        }
+        """
+        expect = """Type Mismatch: FuncCall(putInt,[IntLiteral(1)])\n"""
+        self.assertTrue(TestChecker.test(input, expect, 590))
+    def test_591(self):
+        input = """ 
+        func main() {
+            var i = 3;
+            var b string;
+            for i,b := range [4] string {"a"} {
+                return
+            }
+        }
+        """
+        expect = """"""
+        self.assertTrue(TestChecker.test(input, expect, 591))
+    def test_592(self):
+        input = """ 
+        func main() {
+            var i = 3.0;
+            var b string;
+            for i,b := range [4] string { b}{
+                return
+            }
+        }
+        """
+        expect = """Type Mismatch: ForEach(Id(i),Id(b),ArrayLiteral([IntLiteral(4)],StringType,[Id(b)]),Block([Return()]))\n"""
+        self.assertTrue(TestChecker.test(input, expect, 592))
+    def test_593(self):
+        input = """ 
+        func main() {
+            var i = -putInt(1);
+        }
+        """
+        expect = """Type Mismatch: FuncCall(putInt,[IntLiteral(1)])\n"""
+        self.assertTrue(TestChecker.test(input, expect, 593))
+    def test_594(self):
+        input = """ 
+        func main(a int) {
+            main(main(1));
+        }
+        """
+        expect = """Type Mismatch: FuncCall(main,[FuncCall(main,[IntLiteral(1)])])\n"""
+        self.assertTrue(TestChecker.test(input, expect, 594))
+    # def test_595(self):
+    #     input = """ 
+    #     type A struct {
+    #     a int
+    #     }
+    #     func main(a int) {
+    #         var a = A { a: main}
+    #     }
+    #     """
+    #     expect = """Type Mismatch: FuncCall(main,[IntLiteral(1)])\n"""
+    #     self.assertTrue(TestChecker.test(input, expect, 595))
+    # def test_596(self): 
+    #         input = """
+    #         type A struct {
+    #         a int
+    #         }
+    #         func main(a int) {
+    #             var b = A + 1;
+    #         }
+    #         """
+    #         expect = """Undeclared Identifier: A\n"""
+    #         self.assertTrue(TestChecker.test(input, expect, 596))
+
+    # def test_597(self):
+    #     input ="""
+    #     func main() A {
+    #         return A;
+    #     }
+    #     type A struct { val int; }
+    #     """
+    #     self.assertTrue(TestChecker.test(
+    #         input,
+    #         "Undeclared Identifier: A\n",
+    #         597
+    #     ))
+    # def test_598(self): 
+    #         input = """
+    #         type A struct {
+    #         a int
+    #         }
+    #         func (a A) get(z A) int {
+    #             return 1
+    #         }
+    #         func main(a int) {
+    #             var a = A { a : 2}
+    #             var b = a.get(A) + 1;
+    #         }
+    #         """
+    #         expect = """Undeclared Identifier: A\n"""
+    #         self.assertTrue(TestChecker.test(input, expect, 598))
+    # def test_599(self): 
+    #         input = """
+    #         type A struct {
+    #         a int
+    #         }
+    #         func main(a int) {
+    #             var b = -A;
+    #         }
+    #         """
+    #         expect = """Undeclared Identifier: A\n"""
+    #         self.assertTrue(TestChecker.test(input, expect, 599))
+    # def test_600(self): 
+    #         input = """
+    #         type A struct {
+    #         a int
+    #         }
+    #         func main(a int) int {
+    #             var b = main(A);
+    #         }
+    #         """
+    #         expect = """Undeclared Identifier: A\n"""
+    #         self.assertTrue(TestChecker.test(input, expect, 600))
+
+    def test_601(self): 
+            input = """
+            type A struct {
+            a int
+            }
+            func (a A) get(z A) int {
+                return 1
+            }
+            func main(a int) int {
+                var a = A { a:1};
+                var b = a.get(A { a:1});
+            }
+            """
+            expect = """"""
+            self.assertTrue(TestChecker.test(input, expect, 601))
+
+    def test_602(self): 
+            input = """
+            type A struct {
+            a int
+            }
+            func test(a A) int {
+                return 0;
+            }
+            func main(a int) int {
+                var a = test(A { a:1});
+            }
+            """
+            expect = """"""
+            self.assertTrue(TestChecker.test(input, expect, 602))
+    def test_602(self): 
+            input = """
+            type A struct {
+            a int
+            }
+            func test(a A) int {
+                return 0;
+            }
+            func main(a int) int {
+                var a = test(A { a:1});
+            }
+            """
+            expect = """"""
+            self.assertTrue(TestChecker.test(input, expect, 602))
+
+    
+    
+    # def test_ass_9(self): 
+    #     input = """
+    #     var a [3]int = foo()[1][2]; 
+    #     const b = 4; 
+        
+    #     func foo() [b][b][3]int  {
+    #         return [4][4][3]int {1,2,3,4}
+    #     }
+        
+    #     func main(){
+    #         e := a[3]
+    #         f := e
+    #     }
+        
+    #     var c[4][3]int = foo()[b] 
+    #     var d int = a[3] + foo[4][4][3]
+               
+    #     """ 
+        
+    #     output = "Undeclared Identifier: foo\n"
+    #     self.assertTrue(TestChecker.test(input,output,431))   
+    
