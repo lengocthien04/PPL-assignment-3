@@ -1,6 +1,8 @@
 """
  * @author nhphung
 """
+
+"""2213250"""
 from AST import * 
 from Visitor import *
 from Utils import Utils
@@ -337,8 +339,6 @@ class StaticChecker(BaseVisitor,Utils):
             if res is not None:
                 raise Redeclared(Type(), ast.name)
         field = []
-
-
         for i in ast.elements:
             res = self.lookup(i[0], field, lambda x: x[0])
             if res is not None:
